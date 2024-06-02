@@ -3,8 +3,11 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 import pyrebase
+from flask_cors import CORS, cross_origin
+import json
 
 app = Flask(__name__)
+cors = CORS(app)
 app.config.from_pyfile('settings.py')
 client = MongoClient(app.config["MONGO_URI"], server_api=ServerApi('1'))
 db = client["sample_mflix"]
@@ -41,26 +44,30 @@ def home_page():
     return movie["title"]
 
 @app.route("/login", methods=['POST','GET' ])
-def login():
+def login():   
     if 'user' in session:
         return "You are logged in as " + session['user']
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+        email = request.json['email']
+        password = request.json['password']
+
         try:
             user = auth.sign_in_with_email_and_password(email, password)
-            session['user']=user['email']
+            session['user'] = user['email']
             session["is_logged_in"] = True
             session["email"] = user["email"]
             session["uid"] = user["localId"]
-            return user['idToken'], 200
+            response = {
+                "idToken": user['idToken']
+            }
+            return json.dumps(response), 200
         except:
-            return "Invalid credentials", 401
+            return json.dumps("Invalid credentials"), 401
         
 @app.route("/logout")
 def logout():
     session.pop('user', None)
-    return "Logged Out", 200
+    return "Successfully Logged Out", 200
 
 @app.route("/register", methods=['POST'])
 def register():
@@ -68,6 +75,6 @@ def register():
     password = request.form['password']
     try:
         user = auth.create_user_with_email_and_password(email, password)
-        return user['idToken'], 200
+        return "Successfully Created", 200
     except:
         return "Email already exists", 401

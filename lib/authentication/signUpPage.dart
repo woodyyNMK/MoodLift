@@ -64,7 +64,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(0, 100, 0, 0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(0, 70, 0, 0),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       children: [
