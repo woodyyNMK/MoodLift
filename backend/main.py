@@ -1,11 +1,12 @@
 from flask import Flask, request, session
+from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 import pyrebase
 
 app = Flask(__name__)
 app.config.from_pyfile('settings.py')
-client = MongoClient(app.config["MONGO_URI"])
+client = MongoClient(app.config["MONGO_URI"], server_api=ServerApi('1'))
 db = client["sample_mflix"]
 
 firebaseconfig = {
@@ -22,7 +23,7 @@ firebase = pyrebase.initialize_app(firebaseconfig)
 
 # Get reference to the auth service and database service
 auth = firebase.auth()
-
+app.secret_key = app.config["APPSECRETKEY"]
 '''
 email = input("Enter email: ")
 password = input("Enter password: ")
@@ -39,7 +40,7 @@ def home_page():
     movie = db.movies.find_one()
     return movie["title"]
 
-@app.route("/", methods=['POST','GET' ])
+@app.route("/login", methods=['POST','GET' ])
 def login():
     if 'user' in session:
         return "You are logged in as " + session['user']
