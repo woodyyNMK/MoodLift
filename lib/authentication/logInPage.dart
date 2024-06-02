@@ -10,6 +10,31 @@ class LogInPage extends StatefulWidget {
 }
 
 class _LogInPageState extends State<LogInPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  //final currentUser = FirebaseAuth.instance.currentUser;
+  final emailRegex = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+  final passwordRegex = RegExp(
+      r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$");
+  String errorMessage = '';
+  String errorEmail = '';
+  String oldPassword = '';
+  bool passwordVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    passwordVisible = true;
+  }
+
+  void dispode() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   final url = dotenv.env['SERVER_URL'];
   Widget build(BuildContext context) {
@@ -78,11 +103,9 @@ class _LogInPageState extends State<LogInPage> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                
                 //-----------------------EMAIL---------------------------
                 Padding(
-                  padding:
-                      const EdgeInsetsDirectional.fromSTEB(24, 24, 0, 0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 0, 0),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -113,6 +136,18 @@ class _LogInPageState extends State<LogInPage> {
                             child: Container(
                               width: 327,
                               child: TextFormField(
+                                controller: _emailController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Email is required';
+                                  } else if (!emailRegex.hasMatch(value)) {
+                                    return 'Please enter a valid email address';
+                                  } else if (errorEmail.isNotEmpty) {
+                                    return errorEmail;
+                                  }
+
+                                  return null;
+                                },
                                 decoration: InputDecoration(
                                   fillColor: const Color(0x4DCACACA),
                                   filled: true,
@@ -149,11 +184,10 @@ class _LogInPageState extends State<LogInPage> {
                     ),
                   ],
                 ),
-                  
+
                 //-------------------------------PASSWORD---------------------------
                 Padding(
-                  padding:
-                      const EdgeInsetsDirectional.fromSTEB(24, 24, 0, 0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 0, 0),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -184,6 +218,20 @@ class _LogInPageState extends State<LogInPage> {
                             child: Container(
                               width: 327,
                               child: TextFormField(
+                                obscureText: passwordVisible,
+                                controller: _passwordController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Password is requried';
+                                  } else if (errorMessage.isNotEmpty) {
+                                    return errorMessage;
+                                  }
+                                  errorMessage = '';
+                                  return null;
+                                },
+                                onChanged: (value) => setState(() {
+                                  errorMessage = '';
+                                }),
                                 decoration: InputDecoration(
                                   fillColor: const Color(0x4DCACACA),
                                   filled: true,
@@ -222,8 +270,7 @@ class _LogInPageState extends State<LogInPage> {
                 ),
                 //-------------------------------Remember Me ---------------------------
                 Padding(
-                  padding:
-                      const EdgeInsetsDirectional.fromSTEB(15, 24, 15, 0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(15, 24, 15, 0),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -245,7 +292,6 @@ class _LogInPageState extends State<LogInPage> {
                           ),
                         ],
                       ),
-                      
                       TextButton(
                         onPressed: () {
                           // Navigator.push(
@@ -276,10 +322,13 @@ class _LogInPageState extends State<LogInPage> {
                   children: [
                     Expanded(
                       child: Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                            15, 15, 15, 0),
+                        padding:
+                            const EdgeInsetsDirectional.fromSTEB(15, 15, 15, 0),
                         child: FloatingActionButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            print("Email: ${_emailController.text}");
+                            print("Password: ${_passwordController.text}");
+                          },
                           backgroundColor: const Color(0x981694B6),
                           elevation: 3,
                           child: const Text(
@@ -298,8 +347,7 @@ class _LogInPageState extends State<LogInPage> {
                 //-------------------------------Don't Have Account ---------------------------
                 //Don't have an account ? Sign Up in one row
                 Padding(
-                  padding:
-                      const EdgeInsetsDirectional.fromSTEB(15, 24, 15, 24),
+                  padding: const EdgeInsetsDirectional.fromSTEB(15, 24, 15, 24),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -324,8 +372,7 @@ class _LogInPageState extends State<LogInPage> {
                           "Sign Up",
                           style: TextStyle(
                             fontSize: 14,
-                            fontFamily:
-                                GoogleFonts.splineSans().fontFamily,
+                            fontFamily: GoogleFonts.splineSans().fontFamily,
                             color: const Color(0xFF1694B6),
                             fontWeight: FontWeight.bold,
                           ),
