@@ -20,7 +20,8 @@ class _MyAppState extends State<MyApp> {
     return const MaterialApp(
       title: 'Sign Up Page',
       home: Scaffold(
-        body: LogInPage(),
+        body: SignUpPage(),
+
       ),
     );
   }
