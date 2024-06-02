@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -10,6 +11,7 @@ class LogInPage extends StatefulWidget {
 
 class _LogInPageState extends State<LogInPage> {
   @override
+  final url = dotenv.env['SERVER_URL'];
   Widget build(BuildContext context) {
     return Container(
       //I want responsive height of the container
@@ -264,7 +266,9 @@ class _LogInPageState extends State<LogInPage> {
                             padding: const EdgeInsetsDirectional.fromSTEB(
                                 15, 15, 15, 0),
                             child: FloatingActionButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                print(url);
+                              },
                               backgroundColor: const Color(0x981694B6),
                               elevation: 3,
                               child: const Text(

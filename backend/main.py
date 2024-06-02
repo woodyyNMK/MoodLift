@@ -50,6 +50,9 @@ def login():
         try:
             user = auth.sign_in_with_email_and_password(email, password)
             session['user']=user['email']
+            session["is_logged_in"] = True
+            session["email"] = user["email"]
+            session["uid"] = user["localId"]
             return user['idToken'], 200
         except:
             return "Invalid credentials", 401
