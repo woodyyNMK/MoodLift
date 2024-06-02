@@ -233,6 +233,21 @@ class _LogInPageState extends State<LogInPage> {
                                   errorMessage = '';
                                 }),
                                 decoration: InputDecoration(
+                                  suffixIcon: Padding(
+                                    padding: const EdgeInsets.only(right: 15.0),
+                                    child: IconButton(
+                                        icon: Icon(
+                                          passwordVisible
+                                              ? Icons.visibility_off_outlined
+                                              : Icons.visibility_outlined,
+                                          color: Colors.grey,
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            passwordVisible = !passwordVisible;
+                                          });
+                                        }),
+                                  ),
                                   fillColor: const Color(0x4DCACACA),
                                   filled: true,
                                   labelStyle: TextStyle(
