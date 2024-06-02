@@ -76,6 +76,7 @@ class _LogInPageState extends State<LogInPage> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                
                 //-----------------------EMAIL---------------------------
                 Padding(
                   padding:
@@ -223,32 +224,42 @@ class _LogInPageState extends State<LogInPage> {
                       const EdgeInsetsDirectional.fromSTEB(15, 24, 15, 0),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Checkbox(
-                        value: false,
-                        onChanged: (value) {},
-                        activeColor: const Color(0xFF1694B6),
-                      ),
-                      Text(
-                        "Remember Me",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: GoogleFonts.splineSans().fontFamily,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Expanded(
-                        child: Align(
-                          alignment: AlignmentDirectional.centerEnd,
-                          child: Text(
-                            "Forget Password?",
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: false,
+                            onChanged: (value) {},
+                            activeColor: const Color(0xFF1694B6),
+                          ),
+                          Text(
+                            "Remember Me",
                             style: TextStyle(
                               fontSize: 14,
-                              fontFamily:
-                                  GoogleFonts.splineSans().fontFamily,
-                              color: const Color(0xFF1694B6),
-                              fontWeight: FontWeight.bold,
+                              fontFamily: GoogleFonts.splineSans().fontFamily,
+                              color: Colors.black,
                             ),
+                          ),
+                        ],
+                      ),
+                      
+                      TextButton(
+                        onPressed: () {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => SignUpPage(),
+                          //   ),
+                          // );
+                        },
+                        child: Text(
+                          "Forget Password ?",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: GoogleFonts.splineSans().fontFamily,
+                            color: const Color(0xFF1694B6),
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -307,19 +318,14 @@ class _LogInPageState extends State<LogInPage> {
                           //   ),
                           // );
                         },
-                        child: Expanded(
-                          child: Align(
-                            alignment: AlignmentDirectional.centerEnd,
-                            child: Text(
-                              "Sign Up",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontFamily:
-                                    GoogleFonts.splineSans().fontFamily,
-                                color: const Color(0xFF1694B6),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                        child: Text(
+                          "Sign Up",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily:
+                                GoogleFonts.splineSans().fontFamily,
+                            color: const Color(0xFF1694B6),
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),

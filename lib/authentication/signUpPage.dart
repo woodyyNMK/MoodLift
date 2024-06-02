@@ -223,7 +223,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Container(
+                                  child: SizedBox(
                                     width: 327,
                                     child: TextFormField(
                                       controller: _emailController,
@@ -306,7 +306,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Container(
+                                  child: SizedBox(
                                     width: 327,
                                     child: TextFormField(
                                       obscureText: passwordVisibleOne,
@@ -406,7 +406,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Container(
+                                  child: SizedBox(
                                     width: 327,
                                     child: TextFormField(
                                       obscureText: passwordVisibleTwo,
@@ -483,18 +483,19 @@ class _SignUpPageState extends State<SignUpPage> {
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsetsDirectional.fromSTEB(
-                                  15, 29, 15, 29),
+                                  15, 29, 15, 15),
                               child: FloatingActionButton(
                                 onPressed: () {
                                   //check if its valid or not and post it to the flask server
                                   if (_formKey.currentState!.validate()) {
                                     print('Name: ${_nameController.text}');
                                     print('Email: ${_emailController.text}');
-                                    print('Password: ${_passwordController.text}');
-                                    print('Confirm Password: ${_confirmPasswordController.text}');
+                                    print(
+                                        'Password: ${_passwordController.text}');
+                                    print(
+                                        'Confirm Password: ${_confirmPasswordController.text}');
                                     //using Flask server to post the data to the server
                                     // postSignUpData();
-                                    
                                   }
                                 },
                                 backgroundColor: const Color(0x981694B6),
@@ -511,7 +512,44 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                           ),
                         ],
-                      )
+                      ),
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            15, 0, 15, 24),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Text(
+                              "Already have an account?",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: GoogleFonts.splineSans().fontFamily,
+                                color: Colors.black,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) => SignUpPage(),
+                                //   ),
+                                // );
+                              },
+                              child: Text(
+                                "Log In",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily:
+                                      GoogleFonts.splineSans().fontFamily,
+                                  color: const Color(0xFF1694B6),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
