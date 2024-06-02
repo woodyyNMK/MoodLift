@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'package:auth_state_manager/auth_state_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import 'signUpPage.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -37,7 +40,6 @@ class _LogInPageState extends State<LogInPage> {
     super.dispose();
   }
 
-  @override
   final String? url = dotenv.env['SERVER_URL'];
   Widget build(BuildContext context) {
     return Container(
@@ -351,8 +353,12 @@ class _LogInPageState extends State<LogInPage> {
                                   "email": _emailController.text,
                                   "password": _passwordController.text};
                                 final response = await http.post(Uri.parse("$url/login"), headers: headers, body: json.encode(request));
+                                var responsePayload = json.decode(response.body);
                                 if (response.statusCode == 200) {
-                                  print("success");
+                                  final bool isSuccessful = await AuthStateManager.instance.setToken(responsePayload['idToken']);
+                                  if (isSuccessful) {
+                                      AuthStateManager.instance.login();
+                                  }
                                   // Navigator.push(
                                   //   context,
                                   //   MaterialPageRoute(
@@ -360,7 +366,6 @@ class _LogInPageState extends State<LogInPage> {
                                   //   ),
                                   // );
                                 } else {
-                                  print("failllllllll");
                                   // ScaffoldMessenger.of(context).showSnackBar(
                                   //   SnackBar(
                                   //     content: Text(responsePayload['message']),
