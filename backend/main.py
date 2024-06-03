@@ -1,3 +1,4 @@
+import datetime
 from flask import Flask, request, session
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
@@ -7,10 +8,10 @@ from flask_cors import CORS, cross_origin
 import json
 
 app = Flask(__name__)
-cors = CORS(app)
+CORS(app)
 app.config.from_pyfile('settings.py')
-client = MongoClient(app.config["MONGO_URI"], server_api=ServerApi('1'))
-db = client["sample_mflix"]
+cluster = MongoClient(app.config["MONGO_URI"], server_api=ServerApi('1'))
+db = cluster["mood_lift"]
 
 firebaseconfig = {
     "apiKey": app.config["APIKEY"],
@@ -63,20 +64,39 @@ def login():
             }
             return json.dumps(response), 200
         except:
-            message = "Invalid credentials"  # Define the "message" variable
-            return json.dumps({"message": message}), 401  # Fix the issue by using the "message" variable
+            response = {
+                "message": "Invalid Credentials"
+            }
+            return json.dump(response), 401 
         
 @app.route("/logout")
 def logout():
     session.pop('user', None)
-    return "Successfully Logged Out", 200
+    response = {
+        "message": "Successfully logged out"
+    }
+    return json.dumps(response), 200
 
 @app.route("/register", methods=['POST'])
 def register():
-    email = request.form['email']
-    password = request.form['password']
+    name = request.json['name']
+    email = request.json['email']
+    password = request.json['password']
     try:
         user = auth.create_user_with_email_and_password(email, password)
-        return "Successfully Created", 200
+        db.users.insert_one({
+            "displayName": name,
+            "email": email,
+            "_id": user["localId"],
+            "password": password,
+            "createdAt": datetime.datetime.now()
+        })
+        response = {
+            "message": "Successfully logged in"
+        }
+        return json.dumps(response), 200
     except:
-        return "Email already exists", 401
+        response = {
+            "message": "Email already exists"
+        }
+        return json.dump(response), 401

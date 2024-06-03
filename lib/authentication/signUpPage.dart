@@ -1,9 +1,9 @@
+import 'dart:convert';
+import 'package:auth_state_manager/auth_state_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -43,7 +43,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _confirmPasswordController.dispose();
     super.dispose();
   }
-
+  final String? url = dotenv.env['SERVER_URL'];
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -485,17 +485,41 @@ class _SignUpPageState extends State<SignUpPage> {
                               padding: const EdgeInsetsDirectional.fromSTEB(
                                   15, 29, 15, 15),
                               child: FloatingActionButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   //check if its valid or not and post it to the flask server
                                   if (_formKey.currentState!.validate()) {
-                                    print('Name: ${_nameController.text}');
-                                    print('Email: ${_emailController.text}');
-                                    print(
-                                        'Password: ${_passwordController.text}');
-                                    print(
-                                        'Confirm Password: ${_confirmPasswordController.text}');
-                                    //using Flask server to post the data to the server
-                                    // postSignUpData();
+                                    try{
+                                      final headers = {'Content-Type': 'application/json'};
+                                      var request = {
+                                        "name": _nameController.text,
+                                        "email": _emailController.text,
+                                        "password": _passwordController.text};
+                                      final response = await http.post(Uri.parse("$url/register"), headers: headers, body: json.encode(request));
+                                      var responsePayload = json.decode(response.body);
+                                      if (response.statusCode == 200) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(responsePayload['message']),
+                                            duration: const Duration(seconds: 2),
+                                          ),
+                                        );
+                                        // Navigator.push(
+                                        //   context,
+                                        //   MaterialPageRoute(
+                                        //     builder: (context) => HomePage(),
+                                        //   ),
+                                        // );
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(responsePayload['message']),
+                                            duration: const Duration(seconds: 2),
+                                          ),
+                                        );
+                                      }
+                                    }catch(e){
+                                      print(e);
+                                    }
                                   }
                                 },
                                 backgroundColor: const Color(0x981694B6),

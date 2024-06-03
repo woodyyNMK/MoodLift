@@ -348,7 +348,7 @@ class _LogInPageState extends State<LogInPage> {
                           child: FloatingActionButton(
                              onPressed: () async {
                               try{
-                                final headers = {'Content-Type': 'application/json'};
+                                final headers = {'Content-Type': 'application/json; charset=UTF-8' };
                                 var request = {
                                   "email": _emailController.text,
                                   "password": _passwordController.text};
