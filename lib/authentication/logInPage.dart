@@ -4,8 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-
+import "../diary/diarypage.dart";
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -151,7 +150,7 @@ class _LogInPageState extends State<LogInPage> {
                                     } else if (errorEmail.isNotEmpty) {
                                       return errorEmail;
                                     }
-              
+
                                     return null;
                                   },
                                   decoration: InputDecoration(
@@ -190,7 +189,7 @@ class _LogInPageState extends State<LogInPage> {
                       ),
                     ],
                   ),
-              
+
                   //-------------------------------PASSWORD---------------------------
                   Padding(
                     padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 0, 0),
@@ -240,7 +239,8 @@ class _LogInPageState extends State<LogInPage> {
                                   }),
                                   decoration: InputDecoration(
                                     suffixIcon: Padding(
-                                      padding: const EdgeInsets.only(right: 15.0),
+                                      padding:
+                                          const EdgeInsets.only(right: 15.0),
                                       child: IconButton(
                                           icon: Icon(
                                             passwordVisible
@@ -250,7 +250,8 @@ class _LogInPageState extends State<LogInPage> {
                                           ),
                                           onPressed: () {
                                             setState(() {
-                                              passwordVisible = !passwordVisible;
+                                              passwordVisible =
+                                                  !passwordVisible;
                                             });
                                           }),
                                     ),
@@ -291,7 +292,8 @@ class _LogInPageState extends State<LogInPage> {
                   ),
                   //-------------------------------Remember Me ---------------------------
                   Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(15, 24, 15, 0),
+                    padding:
+                        const EdgeInsetsDirectional.fromSTEB(15, 24, 15, 0),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -343,21 +345,35 @@ class _LogInPageState extends State<LogInPage> {
                     children: [
                       Expanded(
                         child: Padding(
-                          padding:
-                              const EdgeInsetsDirectional.fromSTEB(15, 15, 15, 0),
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              15, 15, 15, 0),
                           child: FloatingActionButton(
                              onPressed: () async {
                               try{
                                 final headers = {'Content-Type': 'application/json; charset=UTF-8' };
                                 var request = {
                                   "email": _emailController.text,
-                                  "password": _passwordController.text};
-                                final response = await http.post(Uri.parse("$url/login"), headers: headers, body: json.encode(request));
-                                var responsePayload = json.decode(response.body);
+                                  "password": _passwordController.text
+                                };
+                                final response = await http.post(
+                                    Uri.parse("$url/login"),
+                                    headers: headers,
+                                    body: json.encode(request));
+                                var responsePayload =
+                                    json.decode(response.body);
                                 if (response.statusCode == 200) {
-                                  final bool isSuccessful = await AuthStateManager.instance.setToken(responsePayload['idToken']);
+                                  final bool isSuccessful =
+                                      await AuthStateManager.instance
+                                          .setToken(responsePayload['idToken']);
                                   if (isSuccessful) {
-                                      AuthStateManager.instance.login();
+                                    AuthStateManager.instance.login();
+                                    //if successful, navigate to the diarypage.dart
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>const DiaryPage(),
+                                      ),
+                                    );
                                   }
                                    ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -379,8 +395,8 @@ class _LogInPageState extends State<LogInPage> {
                                     ),
                                   );
                                 }
-                              }catch(e){
-                                print(e);
+                              } catch (e) {
+                                // print(e);
                               }
                           },
                             backgroundColor: const Color(0x981694B6),
@@ -401,7 +417,8 @@ class _LogInPageState extends State<LogInPage> {
                   //-------------------------------Don't Have Account ---------------------------
                   //Don't have an account ? Sign Up in one row
                   Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(15, 24, 15, 24),
+                    padding:
+                        const EdgeInsetsDirectional.fromSTEB(15, 24, 15, 24),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       children: [
