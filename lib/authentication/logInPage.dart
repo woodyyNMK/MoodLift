@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'signUpPage.dart';
+
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -359,6 +359,12 @@ class _LogInPageState extends State<LogInPage> {
                                   if (isSuccessful) {
                                       AuthStateManager.instance.login();
                                   }
+                                   ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(responsePayload['message']),
+                                      duration: const Duration(seconds: 2),
+                                    ),
+                                  );
                                   // Navigator.push(
                                   //   context,
                                   //   MaterialPageRoute(
@@ -366,17 +372,16 @@ class _LogInPageState extends State<LogInPage> {
                                   //   ),
                                   // );
                                 } else {
-                                  // ScaffoldMessenger.of(context).showSnackBar(
-                                  //   SnackBar(
-                                  //     content: Text(responsePayload['message']),
-                                  //     duration: const Duration(seconds: 2),
-                                  //   ),
-                                  // );
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(responsePayload['message']),
+                                      duration: const Duration(seconds: 2),
+                                    ),
+                                  );
                                 }
                               }catch(e){
                                 print(e);
                               }
-                            
                           },
                             backgroundColor: const Color(0x981694B6),
                             elevation: 3,

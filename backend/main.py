@@ -58,11 +58,13 @@ def login():
             session["email"] = user["email"]
             session["uid"] = user["localId"]
             response = {
-                "idToken": user['idToken']
+                "idToken": user['idToken'],
+                "message": "Successfully logged in"
             }
             return json.dumps(response), 200
         except:
-            return json.dumps("Invalid credentials"), 401
+            message = "Invalid credentials"  # Define the "message" variable
+            return json.dumps({"message": message}), 401  # Fix the issue by using the "message" variable
         
 @app.route("/logout")
 def logout():
