@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
+import "../model/customcalendar.dart";
 
 class DiaryHistoryPage extends StatefulWidget {
   const DiaryHistoryPage({super.key});
@@ -12,8 +13,6 @@ class DiaryHistoryPage extends StatefulWidget {
 
 class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
-  DateTime? _selectedDay;
-  DateTime? _focusedDay;
 
   @override
   Widget build(BuildContext context) {
@@ -62,76 +61,11 @@ class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 //-----------------Table Calendar-----------------
-                Transform.translate(
-                  offset: const Offset(0, -70),
-                  child: Transform.scale(
-                    scale: 0.7,
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(15),
-                          topRight: Radius.circular(15),
-                          bottomLeft: Radius.circular(15),
-                          bottomRight: Radius.circular(15),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 4,
-                            color: Color(0x33000000),
-                            offset: Offset(0, 0.0),
-                            spreadRadius: 2,
-                          )
-                        ],
-                      ),
-                      child: TableCalendar(
-                        //color of the calendar
-                        firstDay: DateTime.utc(2010, 10, 16),
-                        lastDay: DateTime.utc(2030, 3, 14),
-                        focusedDay: _focusedDay ?? DateTime.now(),
-                        calendarFormat: CalendarFormat.month,
-                        selectedDayPredicate: (day) =>
-                            isSameDay(_selectedDay ?? DateTime.now(), day),
-                        onDaySelected: (selectedDay, focusedDay) {
-                          setState(() {
-                            _selectedDay = selectedDay;
-                            _focusedDay = focusedDay;
-                          });
-                        },
-                        onPageChanged: (focusedDay) {
-                          setState(() {
-                            _focusedDay = focusedDay;
-                          });
-                        },
-                        calendarStyle: CalendarStyle(
-                          defaultTextStyle: const TextStyle(
-                              color: Color.fromARGB(255, 0, 0, 0)),
-                          weekendTextStyle: const TextStyle(color: Colors.red),
-                          todayDecoration: BoxDecoration(
-                            color: isSameDay(_selectedDay, DateTime.now())
-                                ? const Color.fromARGB(255, 255, 0, 0)
-                                : Colors.transparent,
-                            shape: BoxShape.circle,
-                          ),
-                          todayTextStyle: TextStyle(
-                            color: isSameDay(_selectedDay, DateTime.now())
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                          selectedDecoration: const BoxDecoration(
-                            color: Colors.orange,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        headerStyle: const HeaderStyle(
-                          formatButtonVisible: false,
-                          titleCentered: true,
-                        ),
-                      ),
-                    ),
-                  ),
+                CustomCalendar(
+                  onDaySelected: (selectedDay) {
+                    print(selectedDay);
+                  },
                 ),
-
                 //--------------Diary List Session----------------
                 Transform.translate(
                   offset: const Offset(0, -110),
@@ -146,7 +80,7 @@ class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
                   ),
                 ),
                 Transform.translate(
-                  offset: const Offset(0, -90),
+                  offset: const Offset(0, -100),
                   child: Flexible(
                     child: SingleChildScrollView(
                       child: Column(
@@ -155,65 +89,30 @@ class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
                           Container(
                             width: double.infinity,
                             //change responsive height according to the screen
-                            height: MediaQuery.of(context).size.height * 0.3,
+                            height: MediaQuery.of(context).size.height * 0.2,
                             decoration: const BoxDecoration(),
                             child: Padding(
                               padding: const EdgeInsetsDirectional.fromSTEB(
-                                  12, 0, 12, 0),
-                              child: GridView(
+                                  25, 0, 25, 0),
+                              child: ListView(
                                 padding: EdgeInsets.zero,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 20,
-                                  childAspectRatio: 1,
-                                ),
-                                scrollDirection: Axis.vertical,
+                                scrollDirection: Axis.horizontal,
                                 children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      'assets/book.png',
+                                  Padding(
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            0, 0, 19, 0),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.asset(
+                                        'assets/book.png',
+                                        width: 80,
+                                        height: 100,
+                                        fit: BoxFit.contain,
+                                      ),
                                     ),
                                   ),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      'assets/book.png',
-                                    ),
-                                  ),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      'assets/book.png',
-                                    ),
-                                  ),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      'assets/book.png',
-                                    ),
-                                  ),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      'assets/book.png',
-                                    ),
-                                  ),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      'assets/book.png',
-                                    ),
-                                  ),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      'assets/book.png',
-                                    ),
-                                  ),
-                                ],
+                                ].toList(),
                               ),
                             ),
                           ),
@@ -271,7 +170,7 @@ class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
                           ),
                         ].toList(),
                       ),
-            
+
                       //--------------Library----------------
                       Column(
                         mainAxisSize: MainAxisSize.max,
@@ -294,7 +193,7 @@ class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
                           ),
                         ].toList(),
                       ),
-            
+
                       //--------------Statistics----------------
                       Column(
                         mainAxisSize: MainAxisSize.max,
@@ -316,7 +215,7 @@ class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
                           ),
                         ].toList(),
                       ),
-            
+
                       //--------------Articles----------------
                       Column(
                         mainAxisSize: MainAxisSize.max,

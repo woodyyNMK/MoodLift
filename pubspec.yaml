@@ -49,6 +49,9 @@ dependencies:
   flutter_dotenv: ^5.1.0
   flutter_secure_storage: ^9.2.2
   encrypt: ^5.0.3
+  collection: ^1.15.0
+  intl: ^0.17.0
+
 
 dev_dependencies:
   flutter_test:

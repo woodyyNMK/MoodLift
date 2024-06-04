@@ -16,6 +16,7 @@ class DiaryPage extends StatefulWidget {
 
 class _DiaryPageState extends State<DiaryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
+  final _diarycontroller = TextEditingController();
 
   final String? url = dotenv.env['SERVER_URL'];
   // void _signup() async {
@@ -113,7 +114,7 @@ class _DiaryPageState extends State<DiaryPage> {
                   padding: const EdgeInsetsDirectional.fromSTEB(25, 15, 25, 0),
                   child: Container(
                     width: double.infinity,
-                    height: MediaQuery.sizeOf(context).height * 0.72,
+                    height: MediaQuery.sizeOf(context).height * 0.65,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(36),
                       color: Colors.white,
@@ -132,6 +133,7 @@ class _DiaryPageState extends State<DiaryPage> {
                           padding: const EdgeInsetsDirectional.fromSTEB(
                               15, 15, 15, 0),
                           child: TextFormField(
+                            controller: _diarycontroller,
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: "Wrtite your thoughts here...",

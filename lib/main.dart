@@ -4,6 +4,7 @@ import './authentication/logInPage.dart';
 import './diary/diarypage.dart';
 import './diary/diaryviewpage.dart';
 import './diary/diaryhistorypage.dart';
+import './diary/moodsummary.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:auth_state_manager/auth_state_manager.dart';
@@ -31,7 +32,7 @@ class _MyAppState extends State<MyApp> {
     return const MaterialApp(
       title: 'Sign Up Page',
       home: Scaffold(
-        body: DiaryHistoryPage(),
+        body: MoodSummary(),
       ),
     );
     
