@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mood_lift/main.dart';
 import 'package:table_calendar/table_calendar.dart';
 import "../model/customcalendar.dart";
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 class DiaryHistoryPage extends StatefulWidget {
   const DiaryHistoryPage({super.key});
 
@@ -13,6 +17,45 @@ class DiaryHistoryPage extends StatefulWidget {
 
 class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
+
+   final String? url = dotenv.env['SERVER_URL'];
+  void _showDiaries({required DateTime selectedDateTime}) async {
+    String? token = await StorageUtil.storage.read(key: 'idToken');
+    final DateTime param = selectedDateTime;
+    print(param);
+    try{
+      final headers = {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'
+      };
+      final response = await http.get(Uri.parse("$url/showDiaries?param=$param"), headers: headers);
+      var responsePayload = json.decode(response.body);
+      print(responsePayload);
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responsePayload['message']),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => HomePage(),
+        //   ),
+        // );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responsePayload['message']),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }catch(e){
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +105,8 @@ class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
               children: [
                 //-----------------Table Calendar-----------------
                 CustomCalendar(
-                  onDaySelected: (selectedDay) {
-                    print(selectedDay);
+                  onDaySelected: (selectedDateTime) {
+                    _showDiaries(selectedDateTime: selectedDateTime);
                   },
                 ),
                 //--------------Diary List Session----------------

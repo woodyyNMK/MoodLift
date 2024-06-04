@@ -1,5 +1,5 @@
 import datetime
-from bson import ObjectId
+from bson import ObjectId, json_util
 from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
@@ -12,7 +12,7 @@ import base64
 import json
 import firebase_admin
 from firebase_admin import auth as Auth, credentials
-
+from datetime import datetime
 app = Flask(__name__)
 cors = CORS(app)
 
@@ -152,7 +152,7 @@ def createDiray():
                 diary = {
                     "_id":str(ObjectId()),
                     "text": text,
-                    "createdAt": datetime.datetime.now(),
+                    "createdAt": datetime.now(),
                     "positive": 0,
                     "negative": 0,
                 }
@@ -177,7 +177,57 @@ def createDiray():
             "message": "Unauthorized"
         }
         return json.dumps(response), 401
-      
+  
+  
+@app.route("/showDiaries", methods=['GET'])
+def showDiaries():
+    
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        token = auth_header.split(" ")[1]
+    else:
+        token = ''
+    if token != '':
+        decoded_token = Auth.verify_id_token(token)
+        uid = decoded_token['uid']
+        try:
+            # Get the date parameter from the query string and convert it to a datetime object
+            selectedDateTime = request.args.get('param')
+            date = datetime.strptime(selectedDateTime, "%Y-%m-%d %H:%M:%S.%fZ")
+            # Fetch the user document from the users collection
+            user = db.users.find_one({"_id": uid})
+            if user and 'diaries' in user:
+                # Fetch the diaries for the given date
+                diaries = db.diaries.find({
+                    "_id": {"$in": user['diaries']},
+                    "createdAt": {
+                        "$gte": datetime(date.year, date.month, date.day, 0, 0, 0),
+                        "$lt": datetime(date.year, date.month, date.day, 23, 59, 59)
+                    }
+                })
+                # Convert the diaries to a list and return them in the response
+                diaries_list = list(diaries)
+                print(diaries_list)
+                response = {
+                    "diaries": diaries_list,
+                    "message": "Diaries fetched successfully",
+                }
+                return json.dumps(response, default=json_util.default), 200
+            else:
+                response = {
+                    "message": "User not found or no diaries for the user"
+                }
+                return json.dumps(response), 401
+        except:
+            response = {
+                "message": "Error fetching diaries"
+            }
+            return json.dumps(response), 401
+    else:
+        response = {
+            "message": "Unauthorized"
+        }
+        return json.dumps(response), 401 
 '''
 email = input("Enter email: ")
 password = input("Enter password: ")
