@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:auth_state_manager/auth_state_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -489,7 +488,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                   //check if its valid or not and post it to the flask server
                                   if (_formKey.currentState!.validate()) {
                                     try{
-                                      final headers = {'Content-Type': 'application/json'};
+                                      final headers = {'Content-Type': 'application/json; charset=UTF-8'
+                                      };
                                       var request = {
                                         "name": _nameController.text,
                                         "email": _emailController.text,

@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:auth_state_manager/auth_state_manager.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import "../diary/diarypage.dart";
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -39,8 +41,13 @@ class _LogInPageState extends State<LogInPage> {
     super.dispose();
   }
 
-  final String? url = dotenv.env['SERVER_URL'];
+  final String? url = dotenv.env["SERVER_URL"];
+  final key = encrypt.Key.fromUtf8(dotenv.env["ENCRYPTION_KEY"]!);
+  final iv = encrypt.IV.fromLength(16);
+
+  @override
   Widget build(BuildContext context) {
+    final encrypter = Encrypter(AES(key));
     return Container(
       //I want responsive height of the container
       // height: MediaQuery.of(context).size.height * 1,
@@ -349,11 +356,13 @@ class _LogInPageState extends State<LogInPage> {
                               15, 15, 15, 0),
                           child: FloatingActionButton(
                              onPressed: () async {
+                              var encryptedPassword = encrypter.encrypt(_passwordController.text, iv:iv);
                               try{
                                 final headers = {'Content-Type': 'application/json; charset=UTF-8' };
                                 var request = {
                                   "email": _emailController.text,
-                                  "password": _passwordController.text
+                                  "password": encryptedPassword.base64,
+                                  "iv": iv.base64
                                 };
                                 final response = await http.post(
                                     Uri.parse("$url/login"),
@@ -396,7 +405,7 @@ class _LogInPageState extends State<LogInPage> {
                                   );
                                 }
                               } catch (e) {
-                                // print(e);
+                                print("error: $e");
                               }
                           },
                             backgroundColor: const Color(0x981694B6),

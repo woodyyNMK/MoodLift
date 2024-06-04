@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 class DiaryPage extends StatefulWidget {
   const DiaryPage({super.key});
 
@@ -13,6 +15,7 @@ class DiaryPage extends StatefulWidget {
 class _DiaryPageState extends State<DiaryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
 
+  final String? url = dotenv.env['SERVER_URL'];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,7 +99,7 @@ class _DiaryPageState extends State<DiaryPage> {
                               ),
                             ),
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 14,
                               fontFamily: GoogleFonts.splineSans().fontFamily,
                               color: Colors.black,
                             ),
@@ -118,8 +121,39 @@ class _DiaryPageState extends State<DiaryPage> {
                                   color: Color(0xFF000000),
                                   size: 25,
                                 ),
-                                onPressed: () {
-                                  // print('IconButton pressed ...');
+                                onPressed: () async {
+                                  try{
+                                      final headers = {'Content-Type': 'application/json; charset=UTF-8'
+                                      };
+                                      var request = {
+                                        "text": ""
+                                      };
+                                      final response = await http.post(Uri.parse("$url/createDiary"), headers: headers, body: json.encode(request));
+                                      var responsePayload = json.decode(response.body);
+                                      if (response.statusCode == 200) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(responsePayload['message']),
+                                            duration: const Duration(seconds: 2),
+                                          ),
+                                        );
+                                        // Navigator.push(
+                                        //   context,
+                                        //   MaterialPageRoute(
+                                        //     builder: (context) => HomePage(),
+                                        //   ),
+                                        // );
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(responsePayload['message']),
+                                            duration: const Duration(seconds: 2),
+                                          ),
+                                        );
+                                      }
+                                    }catch(e){
+                                      print(e);
+                                    }
                                 },
                               ),
                             ),

@@ -8,7 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:auth_state_manager/auth_state_manager.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 Future<void> main() async {
-  await dotenv.load(fileName: ".flutterenv");
+  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await AuthStateManager.initializeAuthState();
   runApp(const MyApp());

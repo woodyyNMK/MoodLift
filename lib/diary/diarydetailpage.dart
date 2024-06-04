@@ -91,7 +91,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                               alignLabelWithHint: true,
                             ),
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 14,
                               fontFamily: GoogleFonts.splineSans().fontFamily,
                               color: Colors.black,
                             ),
