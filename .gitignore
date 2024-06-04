@@ -43,6 +43,7 @@ app.*.map.json
 #backend
 .env
 __pycache__
+moodlift_firebase_service_account.json
 
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages

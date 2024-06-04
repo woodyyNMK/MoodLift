@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:auth_state_manager/auth_state_manager.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mood_lift/main.dart';
 import "../diary/diarypage.dart";
 import 'package:encrypt/encrypt.dart' as encrypt;
 
@@ -63,11 +65,12 @@ class _LogInPageState extends State<LogInPage> {
       var responsePayload =
           json.decode(response.body);
       if (response.statusCode == 200) {
-        final bool isSuccessful =
-            await AuthStateManager.instance
-                .setToken(responsePayload['idToken']);
-        if (isSuccessful) {
-          AuthStateManager.instance.login();
+        //to Store the token in the local storage
+        await StorageUtil.storage.write(key: 'idToken', value: responsePayload['idToken']);
+        await StorageUtil.storage.write(key: 'refreshToken', value: responsePayload['refreshToken']);
+        await StorageUtil.storage.write(key: 'expiresIn', value: responsePayload['expiresIn']);
+        String? token = await StorageUtil.storage.read(key: 'idToken');
+        if (token != null) {
           //if successful, navigate to the diarypage.dart
           Navigator.push(
             context,
@@ -82,12 +85,6 @@ class _LogInPageState extends State<LogInPage> {
             duration: const Duration(seconds: 2),
           ),
         );
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => HomePage(),
-        //   ),
-        // );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

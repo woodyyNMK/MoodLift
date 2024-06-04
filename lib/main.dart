@@ -15,6 +15,15 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
+class StorageUtil {
+  static final StorageUtil _instance = StorageUtil._();
+  final FlutterSecureStorage _storage;
+
+  StorageUtil._() : _storage = const FlutterSecureStorage();
+
+  static FlutterSecureStorage get storage => _instance._storage;
+}
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -31,7 +40,7 @@ class _MyAppState extends State<MyApp> {
     return const MaterialApp(
       title: 'Sign Up Page',
       home: Scaffold(
-        body: DiaryHistoryPage(),
+        body: LogInPage(),
       ),
     );
     

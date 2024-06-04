@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:mood_lift/main.dart';
 class DiaryPage extends StatefulWidget {
   const DiaryPage({super.key});
 
@@ -16,50 +17,51 @@ class DiaryPage extends StatefulWidget {
 
 class _DiaryPageState extends State<DiaryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
-
+  final _diarycontroller = TextEditingController();
   final String? url = dotenv.env['SERVER_URL'];
-  // void _signup() async {
-  //   final key = encrypt.Key.fromUtf8(dotenv.env['ENCRYPTION_KEY']!);
-  //   final iv = encrypt.IV.fromSecureRandom(16);
-  //   final encrypter = encrypt.Encrypter(encrypt.AES(key,mode: AESMode.cbc));
-  //   final encryptedPassword = encrypter.encrypt(_passwordController.text, iv:iv);
-  //   // final decryptedPassword = encrypter.decrypt(encryptedPassword, iv:iv);
-  //   try{
-  //     final headers = {'Content-Type': 'application/json; charset=UTF-8'
-  //     };
-  //     var request = {
-  //       "name": _nameController.text,
-  //       "email": _emailController.text,
-  //       "password": encryptedPassword.base64,
-  //       "iv": iv.base64
-  //       };
-  //     final response = await http.post(Uri.parse("$url/register"), headers: headers, body: json.encode(request));
-  //     var responsePayload = json.decode(response.body);
-  //     if (response.statusCode == 200) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text(responsePayload['message']),
-  //           duration: const Duration(seconds: 2),
-  //         ),
-  //       );
-  //       // Navigator.push(
-  //       //   context,
-  //       //   MaterialPageRoute(
-  //       //     builder: (context) => HomePage(),
-  //       //   ),
-  //       // );
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: Text(responsePayload['message']),
-  //           duration: const Duration(seconds: 2),
-  //         ),
-  //       );
-  //     }
-  //   }catch(e){
-  //     print(e);
-  //   }
-  // }
+  void _createDiary() async {
+    final key = encrypt.Key.fromUtf8(dotenv.env['ENCRYPTION_KEY']!);
+    final iv = encrypt.IV.fromSecureRandom(16);
+    final encrypter = encrypt.Encrypter(encrypt.AES(key,mode: AESMode.cbc));
+    final encryptedDiary = encrypter.encrypt(_diarycontroller.text, iv:iv);
+    
+    String? token = await StorageUtil.storage.read(key: 'idToken');
+    try{
+      final headers = {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'
+      };
+      var request = {
+        "diary": encryptedDiary.base64,
+        "iv": iv.base64
+        };
+      final response = await http.post(Uri.parse("$url/createDiary"), headers: headers, body: json.encode(request));
+      var responsePayload = json.decode(response.body);
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responsePayload['message']),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => HomePage(),
+        //   ),
+        // );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responsePayload['message']),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }catch(e){
+      print(e);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,7 +115,7 @@ class _DiaryPageState extends State<DiaryPage> {
                   padding: const EdgeInsetsDirectional.fromSTEB(25, 15, 25, 0),
                   child: Container(
                     width: double.infinity,
-                    height: MediaQuery.sizeOf(context).height * 0.72,
+                    height: MediaQuery.sizeOf(context).height * 0.65,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(36),
                       color: Colors.white,
@@ -132,6 +134,7 @@ class _DiaryPageState extends State<DiaryPage> {
                           padding: const EdgeInsetsDirectional.fromSTEB(
                               15, 15, 15, 0),
                           child: TextFormField(
+                            controller: _diarycontroller,
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: "Wrtite your thoughts here...",
@@ -160,14 +163,12 @@ class _DiaryPageState extends State<DiaryPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(36),
                                 ),
+                                onPressed: _createDiary,
                                 child: const FaIcon(
                                   FontAwesomeIcons.check,
                                   color: Color(0xFF000000),
                                   size: 25,
                                 ),
-                                onPressed: () {
-                                  // _signup();
-                                },
                               ),
                             ),
                           ],

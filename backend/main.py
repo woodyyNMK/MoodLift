@@ -1,14 +1,17 @@
 import datetime
-from flask import Flask, jsonify, request, session
+from bson import ObjectId
+from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 import pyrebase
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 import base64
 import json
+import firebase_admin
+from firebase_admin import auth as Auth, credentials
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -19,6 +22,12 @@ db = cluster["mood_lift"]
 ENCRYPTION_KEY = app.config["ENCRYPTION_KEY"].encode('utf-8')
 ivlength = 16
 
+# Load the service account key JSON file.
+cred = credentials.Certificate('./moodlift_firebase_service_account.json')
+# Initialize the app with a service account, granting admin privileges
+firebase_admin.initialize_app(cred)
+
+# Initialize Firebase
 firebaseconfig = {
     "apiKey": app.config["APIKEY"],
     "authDomain": app.config["AUTHDOMAIN"],
@@ -30,20 +39,17 @@ firebaseconfig = {
 }
 # Initialize Firebase
 firebase = pyrebase.initialize_app(firebaseconfig)
-
 # Get reference to the auth service and database service
 auth = firebase.auth()
-app.secret_key = app.config["APPSECRETKEY"]
+
 
 @app.route("/test")
 def home_page():
     movie = db.movies.find_one()
     return movie["title"]
 
-@app.route("/login", methods=['POST','GET' ])
-def login():   
-    if 'user' in session:
-        return "You are logged in as " + session['user']
+@app.route("/login", methods=['POST', 'GET'])
+def login():
     if request.method == 'POST':
         # Get JSON data from the request
         email = request.json['email']
@@ -67,14 +73,11 @@ def login():
         try:
             user = auth.sign_in_with_email_and_password(email, decryptedpassword)
             # info = auth.get_account_info(user['idToken'])
-            # print(user)
-            # print(info)
-            session['user'] = user['email']
-            session["is_logged_in"] = True
-            session["email"] = user["email"]
-            session["uid"] = user["localId"]
+
             response = {
                 "idToken": user['idToken'],
+                "refreshToken": user['refreshToken'],
+                "expiresIn": user['expiresIn'],
                 "message": "Successfully logged in"
             }
             return json.dumps(response), 200
@@ -82,7 +85,7 @@ def login():
             response = {
                 "message": "Invalid Credentials"
             }
-            return json.dump(response), 401 
+            return json.dumps(response), 401 
         
 @app.route("/logout")
 def logout():
@@ -134,19 +137,27 @@ def register():
     
 @app.route("/createDiary", methods=['POST'])
 def createDiray():
-    if 'user' in session:
-        text = request.json['text']
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        token = auth_header.split(" ")[1]
+    else:
+        token = ''
+    if token != '':
+        decoded_token = Auth.verify_id_token(token)
+        uid = decoded_token['uid']
         try:
-            user = db.users.find_one({"_id": session["uid"]})
+            user = db.users.find_one({"_id": uid})
+            text = request.json['diary']
             if user:
                 diary = {
+                    "_id":str(ObjectId()),
                     "text": text,
                     "createdAt": datetime.datetime.now(),
                     "positive": 0,
                     "negative": 0,
                 }
                 db.diaries.insert_one(diary)
-                db.users.update_one({"_id": session["uid"]}, {"$push": {"diaries": diary["_id"]}})
+                db.users.update_one({"_id": uid}, {"$push": {"diaries": diary["_id"]}})
                 response = {
                     "message": "Diary created successfully"
                 }
@@ -161,6 +172,11 @@ def createDiray():
                 "message": "Error creating diary"
             }
             return json.dumps(response), 401
+    else:
+        response = {
+            "message": "Unauthorized"
+        }
+        return json.dumps(response), 401
       
 '''
 email = input("Enter email: ")
