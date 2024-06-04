@@ -7,6 +7,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'librarypage.dart';
+import './moodsummary.dart';
+import './articlepage.dart';
+
 class DiaryPage extends StatefulWidget {
   const DiaryPage({super.key});
 
@@ -259,7 +263,7 @@ class _DiaryPageState extends State<DiaryPage> {
                           children: [
                             const Icon(
                               Icons.content_paste,
-                              color: Colors.black,
+                              color: Color(0xFF1300EB),
                               size: 28,
                             ),
                             Text(
@@ -268,77 +272,135 @@ class _DiaryPageState extends State<DiaryPage> {
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: GoogleFonts.poppins().fontFamily,
-                                color: Colors.black,
+                                color: const Color(0xFF1300EB),
                               ),
                             ),
                           ].toList(),
+                          //write a onclick navigate function to diary page
                         ),
 
                         //--------------Library----------------
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            //Add image icon
-                            const Icon(
-                              Icons.library_books_outlined,
-                              color: Colors.black,
-                              size: 28,
-                            ),
-                            Text(
-                              'Library',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: GoogleFonts.poppins().fontFamily,
-                                color: Colors.black,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        const LibraryPage(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
                               ),
-                            ),
-                          ].toList(),
+                            );
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              //Add image icon
+                              const Icon(
+                                Icons.library_books_outlined,
+                                color: Colors.black,
+                                size: 28,
+                              ),
+                              Text(
+                                'Library',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: GoogleFonts.poppins().fontFamily,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ].toList(),
+                          ),
                         ),
 
                         //--------------Statistics----------------
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.pie_chart_outline,
-                              color: Colors.black,
-                              size: 28,
-                            ),
-                            Text(
-                              'Statistics',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: GoogleFonts.poppins().fontFamily,
-                                color: Colors.black,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        const MoodSummary(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
                               ),
-                            ),
-                          ].toList(),
+                            );
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.pie_chart_outline,
+                                color: Colors.black,
+                                size: 28,
+                              ),
+                              Text(
+                                'Statistics',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: GoogleFonts.poppins().fontFamily,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ].toList(),
+                          ),
                         ),
 
                         //--------------Articles----------------
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.list,
-                              color: Colors.black,
-                              size: 28,
-                            ),
-                            Text(
-                              'Articles',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: GoogleFonts.poppins().fontFamily,
-                                color: Colors.black,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        const ArticlePage(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
                               ),
-                            ),
-                          ].toList(),
+                            );
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.list,
+                                color: Colors.black,
+                                size: 28,
+                              ),
+                              Text(
+                                'Articles',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: GoogleFonts.poppins().fontFamily,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ].toList(),
+                          ),
                         ),
                       ],
                     ))
