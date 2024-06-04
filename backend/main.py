@@ -57,17 +57,18 @@ def login():
         encrypted_password = base64.b64decode(encryptedpasswordb64)
         iv = base64.b64decode(ivb64)
 
-        # key = ENCRYPTION_KEY.encode('utf-8')  # convert string to bytes
-
         # Create AES cipher object for decryption
         cipher = AES.new(ENCRYPTION_KEY, AES.MODE_CBC, iv)
         
         # Decrypt and unpad the password
         decryptedpassword = unpad(cipher.decrypt(encrypted_password), AES.block_size).decode('utf-8')
-        print(f'Decrypted Password: {decryptedpassword}')
+        # print(f'Decrypted Password: {decryptedpassword}')
         
         try:
             user = auth.sign_in_with_email_and_password(email, decryptedpassword)
+            # info = auth.get_account_info(user['idToken'])
+            # print(user)
+            # print(info)
             session['user'] = user['email']
             session["is_logged_in"] = True
             session["email"] = user["email"]
@@ -95,14 +96,30 @@ def logout():
 def register():
     name = request.json['name']
     email = request.json['email']
-    password = request.json['password']
+    encryptedpasswordb64 = request.json['password']
+    ivb64 = request.json['iv']
+    
+    if not encryptedpasswordb64 or not ivb64:
+        return jsonify({'error': 'Missing data'}), 400
+
+    # Decode the base64 encoded values
+    encrypted_password = base64.b64decode(encryptedpasswordb64)
+    iv = base64.b64decode(ivb64)
+
+    # Create AES cipher object for decryption
+    cipher = AES.new(ENCRYPTION_KEY, AES.MODE_CBC, iv)
+
+    # Decrypt and unpad the password
+    decryptedpassword = unpad(cipher.decrypt(encrypted_password), AES.block_size).decode('utf-8')
+    # print(f'Decrypted Password: {decryptedpassword}')
     try:
-        user = auth.create_user_with_email_and_password(email, password)
+        user = auth.create_user_with_email_and_password(email, decryptedpassword)
+        info = auth.get_account_info(user['idToken'])
         db.users.insert_one({
             "displayName": name,
             "email": user["email"],
             "_id": user["localId"],
-            "password": user["passwordHash"],
+            "password": info['users'][0]['passwordHash'],
             "createdAt": datetime.datetime.now()
         })
         response = {
@@ -145,8 +162,6 @@ def createDiray():
             }
             return json.dumps(response), 401
       
-      
-        
 '''
 email = input("Enter email: ")
 password = input("Enter password: ")

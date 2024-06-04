@@ -49,8 +49,6 @@ class _LogInPageState extends State<LogInPage> {
     final encrypter = encrypt.Encrypter(encrypt.AES(key,mode: AESMode.cbc));
     final encryptedPassword = encrypter.encrypt(_passwordController.text, iv:iv);
     // final decryptedPassword = encrypter.decrypt(encryptedPassword, iv:iv);
-    print(encryptedPassword.base64);
-    print(iv.base64);
     try{
       final headers = {'Content-Type': 'application/json; charset=UTF-8' };
       var request = {
