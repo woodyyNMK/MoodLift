@@ -1,8 +1,12 @@
+import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:encrypt/encrypt.dart' as encrypt;
 class DiaryPage extends StatefulWidget {
   const DiaryPage({super.key});
 
@@ -13,6 +17,49 @@ class DiaryPage extends StatefulWidget {
 class _DiaryPageState extends State<DiaryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
 
+  final String? url = dotenv.env['SERVER_URL'];
+  // void _signup() async {
+  //   final key = encrypt.Key.fromUtf8(dotenv.env['ENCRYPTION_KEY']!);
+  //   final iv = encrypt.IV.fromSecureRandom(16);
+  //   final encrypter = encrypt.Encrypter(encrypt.AES(key,mode: AESMode.cbc));
+  //   final encryptedPassword = encrypter.encrypt(_passwordController.text, iv:iv);
+  //   // final decryptedPassword = encrypter.decrypt(encryptedPassword, iv:iv);
+  //   try{
+  //     final headers = {'Content-Type': 'application/json; charset=UTF-8'
+  //     };
+  //     var request = {
+  //       "name": _nameController.text,
+  //       "email": _emailController.text,
+  //       "password": encryptedPassword.base64,
+  //       "iv": iv.base64
+  //       };
+  //     final response = await http.post(Uri.parse("$url/register"), headers: headers, body: json.encode(request));
+  //     var responsePayload = json.decode(response.body);
+  //     if (response.statusCode == 200) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text(responsePayload['message']),
+  //           duration: const Duration(seconds: 2),
+  //         ),
+  //       );
+  //       // Navigator.push(
+  //       //   context,
+  //       //   MaterialPageRoute(
+  //       //     builder: (context) => HomePage(),
+  //       //   ),
+  //       // );
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text(responsePayload['message']),
+  //           duration: const Duration(seconds: 2),
+  //         ),
+  //       );
+  //     }
+  //   }catch(e){
+  //     print(e);
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,7 +166,7 @@ class _DiaryPageState extends State<DiaryPage> {
                                   size: 25,
                                 ),
                                 onPressed: () {
-                                  // print('IconButton pressed ...');
+                                  // _signup();
                                 },
                               ),
                             ),

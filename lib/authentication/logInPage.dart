@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:auth_state_manager/auth_state_manager.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import "../diary/diarypage.dart";
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -39,7 +41,67 @@ class _LogInPageState extends State<LogInPage> {
     super.dispose();
   }
 
-  final String? url = dotenv.env['SERVER_URL'];
+  final String? url = dotenv.env["SERVER_URL"];
+  
+  void _login() async {
+    final key = encrypt.Key.fromUtf8(dotenv.env['ENCRYPTION_KEY']!);
+    final iv = encrypt.IV.fromSecureRandom(16);
+    final encrypter = encrypt.Encrypter(encrypt.AES(key,mode: AESMode.cbc));
+    final encryptedPassword = encrypter.encrypt(_passwordController.text, iv:iv);
+    // final decryptedPassword = encrypter.decrypt(encryptedPassword, iv:iv);
+    try{
+      final headers = {'Content-Type': 'application/json; charset=UTF-8' };
+      var request = {
+        "email": _emailController.text,
+        "password": encryptedPassword.base64,
+        "iv": iv.base64
+      };
+      final response = await http.post(
+          Uri.parse("$url/login"),
+          headers: headers,
+          body: json.encode(request));
+      var responsePayload =
+          json.decode(response.body);
+      if (response.statusCode == 200) {
+        final bool isSuccessful =
+            await AuthStateManager.instance
+                .setToken(responsePayload['idToken']);
+        if (isSuccessful) {
+          AuthStateManager.instance.login();
+          //if successful, navigate to the diarypage.dart
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>const DiaryPage(),
+            ),
+          );
+        }
+          ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responsePayload['message']),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => HomePage(),
+        //   ),
+        // );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responsePayload['message']),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      print("error: $e");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       //I want responsive height of the container
@@ -348,57 +410,7 @@ class _LogInPageState extends State<LogInPage> {
                           padding: const EdgeInsetsDirectional.fromSTEB(
                               15, 15, 15, 0),
                           child: FloatingActionButton(
-                             onPressed: () async {
-                              try{
-                                final headers = {'Content-Type': 'application/json; charset=UTF-8' };
-                                var request = {
-                                  "email": _emailController.text,
-                                  "password": _passwordController.text
-                                };
-                                final response = await http.post(
-                                    Uri.parse("$url/login"),
-                                    headers: headers,
-                                    body: json.encode(request));
-                                var responsePayload =
-                                    json.decode(response.body);
-                                if (response.statusCode == 200) {
-                                  final bool isSuccessful =
-                                      await AuthStateManager.instance
-                                          .setToken(responsePayload['idToken']);
-                                  if (isSuccessful) {
-                                    AuthStateManager.instance.login();
-                                    //if successful, navigate to the diarypage.dart
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>const DiaryPage(),
-                                      ),
-                                    );
-                                  }
-                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(responsePayload['message']),
-                                      duration: const Duration(seconds: 2),
-                                    ),
-                                  );
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //     builder: (context) => HomePage(),
-                                  //   ),
-                                  // );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(responsePayload['message']),
-                                      duration: const Duration(seconds: 2),
-                                    ),
-                                  );
-                                }
-                              } catch (e) {
-                                // print(e);
-                              }
-                          },
+                             onPressed: _login,
                             backgroundColor: const Color(0x981694B6),
                             elevation: 3,
                             child: const Text(
