@@ -1,5 +1,5 @@
 import datetime
-from flask import Flask, request, session
+from flask import Flask, jsonify, request, session
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
@@ -11,12 +11,12 @@ import base64
 import json
 
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app)
 
 app.config.from_pyfile('settings.py')
 cluster = MongoClient(app.config["MONGO_URI"], server_api=ServerApi('1'))
 db = cluster["mood_lift"]
-key = app.config["KEY"]
+ENCRYPTION_KEY = app.config["ENCRYPTION_KEY"].encode('utf-8')
 ivlength = 16
 
 firebaseconfig = {
@@ -35,17 +35,6 @@ firebase = pyrebase.initialize_app(firebaseconfig)
 auth = firebase.auth()
 app.secret_key = app.config["APPSECRETKEY"]
 
-'''
-email = input("Enter email: ")
-password = input("Enter password: ")
-# user = auth.create_user_with_email_and_password(email, password)
-user = auth.sign_in_with_email_and_password(email, password)
-# print(user)
-print(user['idToken'])
-info = auth.get_account_info(user['idToken'])
-print(info)
-'''
-
 @app.route("/test")
 def home_page():
     movie = db.movies.find_one()
@@ -61,13 +50,22 @@ def login():
         encryptedpasswordb64 = request.json['password']
         ivb64 = request.json['iv']
         
+        if not encryptedpasswordb64 or not ivb64:
+            return jsonify({'error': 'Missing data'}), 400
+        
         # Decode the base64 encoded values
         encrypted_password = base64.b64decode(encryptedpasswordb64)
         iv = base64.b64decode(ivb64)
 
+        # key = ENCRYPTION_KEY.encode('utf-8')  # convert string to bytes
+
         # Create AES cipher object for decryption
-        cipher = AES.new(key.encode('utf-8'), AES.MODE_CBC, iv=iv)
-        decryptedpassword = unpad(cipher.decrypt(encrypted_password), AES.block_size)
+        cipher = AES.new(ENCRYPTION_KEY, AES.MODE_CBC, iv)
+        
+        # Decrypt and unpad the password
+        decryptedpassword = unpad(cipher.decrypt(encrypted_password), AES.block_size).decode('utf-8')
+        print(f'Decrypted Password: {decryptedpassword}')
+        
         try:
             user = auth.sign_in_with_email_and_password(email, decryptedpassword)
             session['user'] = user['email']
@@ -146,3 +144,16 @@ def createDiray():
                 "message": "Error creating diary"
             }
             return json.dumps(response), 401
+      
+      
+        
+'''
+email = input("Enter email: ")
+password = input("Enter password: ")
+# user = auth.create_user_with_email_and_password(email, password)
+user = auth.sign_in_with_email_and_password(email, password)
+# print(user)
+print(user['idToken'])
+info = auth.get_account_info(user['idToken'])
+print(info)
+'''
