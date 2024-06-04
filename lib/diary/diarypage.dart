@@ -96,7 +96,7 @@ class _DiaryPageState extends State<DiaryPage> {
                               ),
                             ),
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 14,
                               fontFamily: GoogleFonts.splineSans().fontFamily,
                               color: Colors.black,
                             ),

@@ -42,7 +42,14 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       fontFamily: GoogleFonts.suwannaphum().fontFamily,
-                      color: const Color.fromARGB(255, 21, 80, 194),
+                      color: const Color.fromRGBO(22, 148, 182, 1),
+                      shadows: const [
+                        Shadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.25),
+                          offset: Offset(0, 8),
+                          blurRadius: 8,
+                        )
+                      ],
                     ),
                   ),
                   Text(
@@ -51,7 +58,14 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       fontFamily: GoogleFonts.suwannaphum().fontFamily,
-                      color: const Color.fromARGB(255, 21, 80, 194),
+                      color: const Color.fromRGBO(22, 148, 182, 1),
+                      shadows: const [
+                        Shadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.25),
+                          offset: Offset(0, 8),
+                          blurRadius: 8,
+                        )
+                      ],
                     ),
                   ),
                 ],
@@ -91,7 +105,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                               alignLabelWithHint: true,
                             ),
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 14,
                               fontFamily: GoogleFonts.splineSans().fontFamily,
                               color: Colors.black,
                             ),
@@ -124,7 +138,6 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                     ),
                   ),
                 ),
-                
                 Container(
                     width: double.infinity,
                     height: 85,
