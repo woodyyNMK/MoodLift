@@ -1,5 +1,8 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mood_lift/model/liquidmodel.dart';
 import "../model/monthselector.dart";
 
 class MoodSummary extends StatefulWidget {
@@ -122,6 +125,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                                           color: Colors.black,
                                         ),
                                       ),
+                                      child: const WaveCircle(percentage: 0.45),
                                     ),
                                   ],
                                 ),
