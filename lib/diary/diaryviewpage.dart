@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import './diarypage.dart';
+import 'librarypage.dart';
+import './moodsummary.dart';
+import './articlepage.dart';
 
 class DiaryPageDetail extends StatefulWidget {
   const DiaryPageDetail({super.key});
@@ -161,92 +165,169 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         //--------------Diary----------------
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.content_paste,
-                              color: Colors.black,
-                              size: 28,
-                            ),
-                            Text(
-                              'Diary',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: GoogleFonts.poppins().fontFamily,
-                                color: Colors.black,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        const DiaryPage(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
                               ),
-                            ),
-                          ].toList(),
+                            );
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.content_paste,
+                                color: Colors.black,
+                                size: 28,
+                              ),
+                              Text(
+                                'Diary',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: GoogleFonts.poppins().fontFamily,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ].toList(),
+                            //write a onclick navigate function to diary page
+                          ),
                         ),
 
                         //--------------Library----------------
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            //Add image icon
-                            const Icon(
-                              Icons.library_books_outlined,
-                              color: Colors.black,
-                              size: 28,
-                            ),
-                            Text(
-                              'Library',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: GoogleFonts.poppins().fontFamily,
-                                color: Colors.black,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        const LibraryPage(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
                               ),
-                            ),
-                          ].toList(),
+                            );
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              //Add image icon
+                              const Icon(
+                                Icons.library_books_outlined,
+                                color: Color(0xFF1300EB),
+                                size: 28,
+                              ),
+                              Text(
+                                'Library',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: GoogleFonts.poppins().fontFamily,
+                                  color: const Color(0xFF1300EB),
+                                ),
+                              ),
+                            ].toList(),
+                          ),
                         ),
 
                         //--------------Statistics----------------
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.pie_chart_outline,
-                              color: Colors.black,
-                              size: 28,
-                            ),
-                            Text(
-                              'Statistics',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: GoogleFonts.poppins().fontFamily,
-                                color: Colors.black,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        const MoodSummary(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
                               ),
-                            ),
-                          ].toList(),
+                            );
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.pie_chart_outline,
+                                color: Colors.black,
+                                size: 28,
+                              ),
+                              Text(
+                                'Statistics',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: GoogleFonts.poppins().fontFamily,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ].toList(),
+                          ),
                         ),
 
                         //--------------Articles----------------
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.list,
-                              color: Colors.black,
-                              size: 28,
-                            ),
-                            Text(
-                              'Articles',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: GoogleFonts.poppins().fontFamily,
-                                color: Colors.black,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        const ArticlePage(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
                               ),
-                            ),
-                          ].toList(),
+                            );
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.list,
+                                color: Colors.black,
+                                size: 28,
+                              ),
+                              Text(
+                                'Articles',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: GoogleFonts.poppins().fontFamily,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ].toList(),
+                          ),
                         ),
                       ],
                     ))

@@ -4,7 +4,7 @@ import './authentication/signUpPage.dart';
 import './authentication/logInPage.dart';
 import './diary/diarypage.dart';
 import './diary/diaryviewpage.dart';
-import './diary/diaryhistorypage.dart';
+import 'diary/librarypage.dart';
 import './diary/moodsummary.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';

@@ -1,61 +1,21 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mood_lift/main.dart';
 import 'package:table_calendar/table_calendar.dart';
 import "../model/customcalendar.dart";
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
-class DiaryHistoryPage extends StatefulWidget {
-  const DiaryHistoryPage({super.key});
+import './diarypage.dart';
+import './moodsummary.dart';
+import './articlepage.dart';
+
+class LibraryPage extends StatefulWidget {
+  const LibraryPage({super.key});
 
   @override
-  State<DiaryHistoryPage> createState() => _DiaryHistoryPageState();
+  State<LibraryPage> createState() => _LibraryPageState();
 }
 
-class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
+class _LibraryPageState extends State<LibraryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
-
-   final String? url = dotenv.env['SERVER_URL'];
-  void _showDiaries({required DateTime selectedDateTime}) async {
-    String? token = await StorageUtil.storage.read(key: 'idToken');
-    final DateTime param = selectedDateTime;
-    print(param);
-    try{
-      final headers = {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $token'
-      };
-      final response = await http.get(Uri.parse("$url/showDiaries?param=$param"), headers: headers);
-      var responsePayload = json.decode(response.body);
-      print(responsePayload);
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(responsePayload['message']),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => HomePage(),
-        //   ),
-        // );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(responsePayload['message']),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    }catch(e){
-      print(e);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +65,8 @@ class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
               children: [
                 //-----------------Table Calendar-----------------
                 CustomCalendar(
-                  onDaySelected: (selectedDateTime) {
-                    _showDiaries(selectedDateTime: selectedDateTime);
+                  onDaySelected: (selectedDay) {
+                    print(selectedDay);
                   },
                 ),
                 //--------------Diary List Session----------------
@@ -193,25 +153,45 @@ class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       //--------------Diary----------------
-                      Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.content_paste,
-                            color: Colors.black,
-                            size: 28,
-                          ),
-                          Text(
-                            'Diary',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: GoogleFonts.poppins().fontFamily,
-                              color: Colors.black,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const DiaryPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
                             ),
-                          ),
-                        ].toList(),
+                          );
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.content_paste,
+                              color: Colors.black,
+                              size: 28,
+                            ),
+                            Text(
+                              'Diary',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: GoogleFonts.poppins().fontFamily,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ].toList(),
+                          //write a onclick navigate function to diary page
+                        ),
                       ),
 
                       //--------------Library----------------
@@ -222,7 +202,7 @@ class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
                           //Add image icon
                           const Icon(
                             Icons.library_books_outlined,
-                            color: Colors.black,
+                            color: Color(0xFF1300EB),
                             size: 28,
                           ),
                           Text(
@@ -231,54 +211,92 @@ class _DiaryHistoryPageState extends State<DiaryHistoryPage> {
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               fontFamily: GoogleFonts.poppins().fontFamily,
-                              color: Colors.black,
+                              color: Color(0xFF1300EB),
                             ),
                           ),
                         ].toList(),
                       ),
 
                       //--------------Statistics----------------
-                      Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.pie_chart_outline,
-                            color: Colors.black,
-                            size: 28,
-                          ),
-                          Text(
-                            'Statistics',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: GoogleFonts.poppins().fontFamily,
-                              color: Colors.black,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const MoodSummary(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
                             ),
-                          ),
-                        ].toList(),
+                          );
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.pie_chart_outline,
+                              color: Colors.black,
+                              size: 28,
+                            ),
+                            Text(
+                              'Statistics',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: GoogleFonts.poppins().fontFamily,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ].toList(),
+                        ),
                       ),
 
                       //--------------Articles----------------
-                      Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.list,
-                            color: Colors.black,
-                            size: 28,
-                          ),
-                          Text(
-                            'Articles',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: GoogleFonts.poppins().fontFamily,
-                              color: Colors.black,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const ArticlePage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
                             ),
-                          ),
-                        ].toList(),
+                          );
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.list,
+                              color: Colors.black,
+                              size: 28,
+                            ),
+                            Text(
+                              'Articles',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: GoogleFonts.poppins().fontFamily,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ].toList(),
+                        ),
                       ),
                     ],
                   ),
