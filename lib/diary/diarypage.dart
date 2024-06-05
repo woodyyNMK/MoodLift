@@ -25,7 +25,7 @@ class _DiaryPageState extends State<DiaryPage> {
   final String? url = dotenv.env['SERVER_URL'];
   void _createDiary() async {
     final key = encrypt.Key.fromUtf8(dotenv.env['ENCRYPTION_KEY']!);
-    final iv = encrypt.IV.fromSecureRandom(16);
+    final iv = encrypt.IV.fromUtf8(dotenv.env['ENCRYPTION_IV']!);
     final encrypter = encrypt.Encrypter(encrypt.AES(key,mode: AESMode.cbc));
     final encryptedDiary = encrypter.encrypt(_diarycontroller.text, iv:iv);
     

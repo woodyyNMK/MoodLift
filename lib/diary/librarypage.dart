@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mood_lift/diary/diaryviewpage.dart';
-import 'package:table_calendar/table_calendar.dart';
 import "../model/customcalendar.dart";
 import './diarypage.dart';
 import './moodsummary.dart';
@@ -21,8 +19,9 @@ class LibraryPage extends StatefulWidget {
 class _LibraryPageState extends State<LibraryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
   final String? url = dotenv.env['SERVER_URL'];
+
   List<Map<String, dynamic>> diaries = [];
-  late DateTime date;
+
   void _showDiaries({required DateTime selectedDateTime}) async {
     String? token = await StorageUtil.storage.read(key: 'idToken');
     final DateTime param = selectedDateTime;
@@ -43,12 +42,6 @@ class _LibraryPageState extends State<LibraryPage> {
             duration: const Duration(seconds: 2),
           ),
         );
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => HomePage(),
-        //   ),
-        // );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -148,11 +141,13 @@ class _LibraryPageState extends State<LibraryPage> {
                               itemBuilder: (context, index) {
                                  return GestureDetector(
                                   onTap: () {
-                                    DateTime parsedDate = DateTime.parse(diaries[index]['createdAt']['$date']);
+                                    String createdAtString = jsonEncode(diaries[index]['createdAt']);
+                                    String formattedDateString = createdAtString.substring(10, 20);
+                                    DateTime date = DateTime.parse(formattedDateString);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => DiaryPageDetail(key: ValueKey(index) ,date: parsedDate)
+                                        builder: (context) => DiaryPageDetail(key: ValueKey(index), id: diaries[index]['_id'], text: diaries[index]['text'], date: date, positive: diaries[index]['positive'], negative: diaries[index]['negative'])
                                       ),
                                     );
                                   },
@@ -176,8 +171,8 @@ class _LibraryPageState extends State<LibraryPage> {
                                           )
                                       ),
                                     ],
-                                                                   ),
-                                 );
+                                  ),
+                                );
                               },
                             )
                           ),

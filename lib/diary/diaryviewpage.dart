@@ -1,16 +1,27 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mood_lift/main.dart';
 import './diarypage.dart';
 import 'librarypage.dart';
 import './moodsummary.dart';
 import './articlepage.dart';
 import 'package:intl/intl.dart';
-class DiaryPageDetail extends StatefulWidget {
+import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:encrypt/encrypt.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 
+class DiaryPageDetail extends StatefulWidget {
+  final String text;
   final DateTime date;
-  const DiaryPageDetail({required Key key,  required this.date}) : super(key: key);
+  final int positive;
+  final int negative;
+  final String id;
+  const DiaryPageDetail({required key,required this.id, required this.text, required this.date, required this.positive, required this.negative}) : super(key: key);
 
   @override
   State<DiaryPageDetail> createState() => _DiaryPageDetailState();
@@ -19,12 +30,27 @@ class DiaryPageDetail extends StatefulWidget {
 class _DiaryPageDetailState extends State<DiaryPageDetail> {
   final scafflodkey = GlobalKey<ScaffoldState>();
   late String formattedDate;
+  late var displayText;
+  late var id;
+  bool isEditing = false;
+  final String? url = dotenv.env['SERVER_URL'];
+  final key = encrypt.Key.fromUtf8(dotenv.env['ENCRYPTION_KEY']!);
+  final iv = encrypt.IV.fromUtf8(dotenv.env['ENCRYPTION_IV']!);
+  encrypt.Encrypter? encrypter;
 
+  late TextEditingController _diaryTextController;
+  
   @override
   void initState() {
     super.initState();
     formattedDate = DateFormat('d MMMM yyyy').format(widget.date);
+    encrypter = encrypt.Encrypter(encrypt.AES(key, mode: AESMode.cbc));
+    final encryptedText = Encrypted.fromBase64(widget.text);
+    displayText = encrypter?.decrypt(encryptedText, iv: iv);
+    id = widget.id;
+    _diaryTextController = TextEditingController(text: displayText);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,9 +137,12 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                           padding: const EdgeInsetsDirectional.fromSTEB(
                               15, 15, 15, 0),
                           child: TextFormField(
+                            controller: _diaryTextController,
+                            // initialValue: displayText,
+                            readOnly: !isEditing,
                             decoration: const InputDecoration(
                               border: InputBorder.none,
-                              labelText: "Wrtite your thoughts here...",
+                              hintText: "Here's Past Memory",
                               alignLabelWithHint: true,
                             ),
                             style: TextStyle(
@@ -134,13 +163,43 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(36),
                                 ),
-                                child: const FaIcon(
-                                  FontAwesomeIcons.check,
-                                  color: Color(0xFF000000),
+                                child: FaIcon(
+                                  isEditing ? FontAwesomeIcons.check : FontAwesomeIcons.edit,
+                                  color: const Color(0xFF000000),
                                   size: 25,
                                 ),
-                                onPressed: () {
-                                  // print('IconButton pressed ...');
+                                onPressed: () async {
+                                  if(isEditing == true){
+                                    String? token = await StorageUtil.storage.read(key: 'idToken');
+                                    final String param = id;
+                                    final encryptedDiary = encrypter?.encrypt(_diaryTextController.text, iv:iv);
+                                    final headers = {
+                                      'Content-Type': 'application/json; charset=UTF-8',
+                                      'Authorization': 'Bearer $token'};
+                                    var request = {
+                                      "diary": encryptedDiary!.base64,
+                                    };
+                                    final response = await http.put(Uri.parse("$url/updateDiary?param=$param"), headers: headers, body: json.encode(request));
+                                    var responsePayload = json.decode(response.body);
+                                    if (response.statusCode == 200) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(responsePayload['message']),
+                                          duration: const Duration(seconds: 2),
+                                        ),
+                                      );
+                                    }else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(responsePayload['message']),
+                                          duration: const Duration(seconds: 2),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                  setState(() {
+                                    isEditing = !isEditing;
+                                  });
                                 },
                               ),
                             ),

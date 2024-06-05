@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mood_lift/diary/librarypage.dart';
 import 'package:mood_lift/main.dart';
 import "../diary/diarypage.dart";
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -61,8 +60,7 @@ class _LogInPageState extends State<LogInPage> {
           Uri.parse("$url/login"),
           headers: headers,
           body: json.encode(request));
-      var responsePayload =
-          json.decode(response.body);
+      var responsePayload = json.decode(response.body);
       if (response.statusCode == 200) {
         //to Store the token in the local storage
         await StorageUtil.storage.write(key: 'idToken', value: responsePayload['idToken']);
@@ -74,16 +72,16 @@ class _LogInPageState extends State<LogInPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>const LibraryPage(),
+              builder: (context) =>const DiaryPage(),
             ),
           );
         }
           ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(responsePayload['message']),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+            SnackBar(
+              content: Text(responsePayload['message']),
+              duration: const Duration(seconds: 2),
+            ),
+          );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

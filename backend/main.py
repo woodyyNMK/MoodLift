@@ -179,6 +179,76 @@ def createDiray():
         }
         return json.dumps(response), 401
   
+@app.route("/updateDiary", methods=['PUT'])
+def updateDiary():
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        token = auth_header.split(" ")[1]
+    else:
+        token = ''
+
+    if token == '':
+        response = {
+            "message": "Unauthorized"
+        }
+        return json.dumps(response), 401
+
+    try:
+        decoded_token = Auth.verify_id_token(token)
+        uid = decoded_token['uid']
+        print(f"Decoded UID: {uid}")
+
+        id = request.args.get('param')
+        if not id:
+            response = {
+                "message": "Missing diary ID"
+            }
+            return json.dumps(response), 400
+        print(f"Diary ID: {id}")
+        text = request.json.get('diary')
+        if not text:
+            response = {
+                "message": "Missing diary text"
+            }
+            return json.dumps(response), 400
+
+        try:
+            user_doc = db.users.find_one({"_id": uid})
+            print(f"User document: {user_doc}")
+
+            if user_doc:
+                if 'diaries' in user_doc and id in user_doc['diaries']:
+                    db.diaries.update_one(
+                        {"_id": id},
+                        {"$set": {"text": text}}
+                    )
+                    return json.dumps({"message": "Diary updated successfully"}), 200
+                else:
+                    response = {
+                        "message": "Diary ID not found in user's diary array"
+                    }
+                    return json.dumps(response), 404
+            else:
+                response = {
+                    "message": "User not found"
+                }
+                return json.dumps(response), 404
+
+        except Exception as db_error:
+            print(f"Database error: {db_error}")
+            response = {
+                "message": "Error accessing user document",
+                "error": str(db_error)
+            }
+            return json.dumps(response), 500
+
+    except Exception as e:
+        print(f"Error: {e}")
+        response = {
+            "message": "Error updating diary",
+            "error": str(e)
+        }
+        return json.dumps(response), 500
   
 @app.route("/showDiaries", methods=['GET'])
 def showDiaries():
