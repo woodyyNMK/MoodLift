@@ -1,5 +1,5 @@
 // ignore_for_file: avoid_print
-/*
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mood_lift/model/liquidmodel.dart';
@@ -425,4 +425,3 @@ class _MoodSummaryState extends State<MoodSummary> {
     );
   }
 }
-*/

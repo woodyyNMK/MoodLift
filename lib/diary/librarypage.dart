@@ -1,4 +1,4 @@
-/*
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -72,7 +72,7 @@ class _LibraryPageState extends State<LibraryPage> {
           image: DecorationImage(
             fit: BoxFit.cover,
             image: Image.asset(
-              'assets/background.png',
+              'assets/images/background.png',
             ).image,
           ),
         ),
@@ -376,4 +376,3 @@ class _LibraryPageState extends State<LibraryPage> {
     );
   }
 }
-*/

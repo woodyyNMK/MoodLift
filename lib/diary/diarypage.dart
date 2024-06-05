@@ -1,18 +1,17 @@
-/*
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:mood_lift/main.dart';
 import 'librarypage.dart';
 import './moodsummary.dart';
 import './articlepage.dart';
-
-import 'package:mood_lift/main.dart';
+import '../model/colormodel.dart';
+import '../model/musicmodel.dart';
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({super.key});
@@ -24,9 +23,19 @@ class DiaryPage extends StatefulWidget {
 class _DiaryPageState extends State<DiaryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
 
-  //-----------------Diary Controller----------------
+  //-----------------Diary Controller variable ----------------
   final _diarycontroller = TextEditingController();
   final String? url = dotenv.env['SERVER_URL'];
+
+  //---------------NLP sentiment Analysis variable ----------------
+  final String? nlptoken = dotenv.env['NLP_token'];
+
+  String _result = "";
+  int _displayHighestScore = 0;
+
+  LinearGradient _backgroundGradient =
+      BackgroundColors.getSentimentColor('Neutral');
+  //-----------------Diary Controller function ----------------
 
   void _createDiary() async {
     final key = encrypt.Key.fromUtf8(dotenv.env['ENCRYPTION_KEY']!);
@@ -64,47 +73,61 @@ class _DiaryPageState extends State<DiaryPage> {
     }
   }
 
-  //---------------NLP sentiment Analysis ----------------
-
-  String _result = "";
+  //---------------NLP sentiment Analysis function----------------
 
   void _analyzeSentiment(String text) async {
-    String? token = await StorageUtil.storage.read(key: 'idToken');
+    try {
+      final response = await http.post(
+        Uri.parse(
+            'https://api-inference.huggingface.co/models/cardiffnlp/twitter-roberta-base-sentiment'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $nlptoken',
+        },
+        body: jsonEncode(<String, String>{'inputs': text}),
+      );
 
-    final response = await http.post(
-      Uri.parse("$url/NLPanalyze"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $token'
-      },
-      body: jsonEncode(<String, String>{'text': text}),
-    );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        final highestScore = (data[0][0]['score'] * 100).round();
+        final totalScore =
+            (data[0].fold(0, (sum, item) => sum + item['score']) * 100).round();
+        final labelMapping = {
+          'LABEL_0': 'Negative',
+          'LABEL_1': 'Neutral',
+          'LABEL_2': 'Positive',
+        };
+        final sentiment = labelMapping[data[0][0]['label']];
 
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      setState(() {
-        _result =
-            "Sentiment: ${data['sentiment']}, Total Score: ${data['total_score']}%";
-      });
-    } else {
+        setState(() {
+          _result =
+              "Mood: $sentiment, Highest Score: $highestScore%, Total Score: $totalScore%";
+          _displayHighestScore = highestScore;
+
+          _backgroundGradient = BackgroundColors.getSentimentColor(sentiment!);
+          print(_result);
+          print(_displayHighestScore);
+        });
+        SoundManager.playSound(sentiment!);
+      } else {
+        throw Exception('Failed to analyze sentiment');
+      }
+    } catch (e) {
+      print(e);
       throw Exception('Failed to analyze sentiment');
     }
   }
+
+  //------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scafflodkey,
-      body: Container(
+      body: AnimatedContainer(
+        duration: const Duration(seconds: 1),
         width: double.infinity,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: Image.asset(
-              'assets/background.png',
-            ).image,
-          ),
-        ),
+        decoration: BoxDecoration(gradient: _backgroundGradient),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
@@ -182,10 +205,9 @@ class _DiaryPageState extends State<DiaryPage> {
                             maxLines: 33,
 
                             //-----------------NLP sentiment Analysis ----------------
-                            onChanged: (text) {
-                              if (text.endsWith('.')) {
-                                _analyzeSentiment(text);
-                                print(_result);
+                            onChanged: (_diarycontroller) {
+                              if (_diarycontroller.endsWith('.')) {
+                                _analyzeSentiment(_diarycontroller);
                               }
                             },
                           ),
@@ -444,4 +466,3 @@ class _DiaryPageState extends State<DiaryPage> {
     );
   }
 }
-*/
