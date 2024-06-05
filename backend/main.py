@@ -156,6 +156,7 @@ def createDiray():
                     "positive": 0,
                     "negative": 0,
                 }
+                print(diary)
                 db.diaries.insert_one(diary)
                 db.users.update_one({"_id": uid}, {"$push": {"diaries": diary["_id"]}})
                 response = {

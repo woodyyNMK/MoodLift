@@ -6,9 +6,11 @@ import './diarypage.dart';
 import 'librarypage.dart';
 import './moodsummary.dart';
 import './articlepage.dart';
-
+import 'package:intl/intl.dart';
 class DiaryPageDetail extends StatefulWidget {
-  const DiaryPageDetail({super.key});
+
+  final DateTime date;
+  const DiaryPageDetail({required Key key,  required this.date}) : super(key: key);
 
   @override
   State<DiaryPageDetail> createState() => _DiaryPageDetailState();
@@ -16,7 +18,13 @@ class DiaryPageDetail extends StatefulWidget {
 
 class _DiaryPageDetailState extends State<DiaryPageDetail> {
   final scafflodkey = GlobalKey<ScaffoldState>();
+  late String formattedDate;
 
+  @override
+  void initState() {
+    super.initState();
+    formattedDate = DateFormat('d MMMM yyyy').format(widget.date);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +65,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                     ),
                   ),
                   Text(
-                    '25 May 2024',
+                    formattedDate,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mood_lift/diary/diaryviewpage.dart';
 import 'package:table_calendar/table_calendar.dart';
 import "../model/customcalendar.dart";
 import './diarypage.dart';
 import './moodsummary.dart';
 import './articlepage.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'package:mood_lift/main.dart';
+import 'dart:convert';
 class LibraryPage extends StatefulWidget {
   const LibraryPage({super.key});
 
@@ -16,6 +20,47 @@ class LibraryPage extends StatefulWidget {
 
 class _LibraryPageState extends State<LibraryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
+  final String? url = dotenv.env['SERVER_URL'];
+  List<Map<String, dynamic>> diaries = [];
+  late DateTime date;
+  void _showDiaries({required DateTime selectedDateTime}) async {
+    String? token = await StorageUtil.storage.read(key: 'idToken');
+    final DateTime param = selectedDateTime;
+    try{
+      final headers = {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'
+      };
+      final response = await http.get(Uri.parse("$url/showDiaries?param=$param"), headers: headers);
+      var responsePayload = json.decode(response.body);
+      setState(() {
+        diaries = (responsePayload['diaries'] as List).map((item) => item as Map<String, dynamic>).toList();
+      });
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responsePayload['message']),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => HomePage(),
+        //   ),
+        // );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responsePayload['message']),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }catch(e){
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +110,8 @@ class _LibraryPageState extends State<LibraryPage> {
               children: [
                 //-----------------Table Calendar-----------------
                 CustomCalendar(
-                  onDaySelected: (selectedDay) {
-                    print(selectedDay);
+                  onDaySelected: (selectedDateTime) {
+                    _showDiaries(selectedDateTime: selectedDateTime);
                   },
                 ),
                 //--------------Diary List Session----------------
@@ -84,43 +129,60 @@ class _LibraryPageState extends State<LibraryPage> {
                 ),
                 Transform.translate(
                   offset: const Offset(0, -100),
-                  child: Flexible(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            //change responsive height according to the screen
-                            height: MediaQuery.of(context).size.height * 0.2,
-                            decoration: const BoxDecoration(),
-                            child: Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  25, 0, 25, 0),
-                              child: ListView(
-                                padding: EdgeInsets.zero,
-                                scrollDirection: Axis.horizontal,
-                                children: [
-                                  Padding(
-                                    padding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                            0, 0, 19, 0),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Image.asset(
-                                        'assets/book.png',
-                                        width: 80,
-                                        height: 100,
-                                        fit: BoxFit.contain,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          //change responsive height according to the screen
+                          height: MediaQuery.of(context).size.height * 0.2,
+                          decoration: const BoxDecoration(),
+                          child: Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                25, 0, 25, 0),
+                            child: ListView.builder(
+                              padding: EdgeInsets.zero,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: diaries.length,
+                              itemBuilder: (context, index) {
+                                 return GestureDetector(
+                                  onTap: () {
+                                    DateTime parsedDate = DateTime.parse(diaries[index]['createdAt']['$date']);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DiaryPageDetail(key: ValueKey(index) ,date: parsedDate)
                                       ),
-                                    ),
-                                  ),
-                                ].toList(),
-                              ),
-                            ),
+                                    );
+                                  },
+                                  child: Column(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.asset(
+                                          'assets/book.png', // replace 'imageUrl' with the actual field name
+                                          width: 80,
+                                          height: 100,
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      Text("Diary ${index + 1}", // replace 'title' with the actual field name
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: GoogleFonts.suwannaphum().fontFamily,
+                                            color: Colors.black,
+                                          )
+                                      ),
+                                    ],
+                                                                   ),
+                                 );
+                              },
+                            )
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 )

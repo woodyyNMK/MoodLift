@@ -1,12 +1,10 @@
 import 'dart:convert';
-import 'package:auth_state_manager/auth_state_manager.dart';
 import 'package:encrypt/encrypt.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mood_lift/diary/diaryhistorypage.dart';
+import 'package:mood_lift/diary/librarypage.dart';
 import 'package:mood_lift/main.dart';
 import "../diary/diarypage.dart";
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -76,7 +74,7 @@ class _LogInPageState extends State<LogInPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) =>const DiaryHistoryPage(),
+              builder: (context) =>const LibraryPage(),
             ),
           );
         }
