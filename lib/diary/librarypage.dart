@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:mood_lift/main.dart';
 import 'dart:convert';
+
 class LibraryPage extends StatefulWidget {
   const LibraryPage({super.key});
 
@@ -26,15 +28,19 @@ class _LibraryPageState extends State<LibraryPage> {
   void _showDiaries({required DateTime selectedDateTime}) async {
     String? token = await StorageUtil.storage.read(key: 'idToken');
     final DateTime param = selectedDateTime;
-    try{
+
+    try {
       final headers = {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token'
       };
-      final response = await http.get(Uri.parse("$url/showDiaries?param=$param"), headers: headers);
+      final response = await http
+          .get(Uri.parse("$url/showDiaries?param=$param"), headers: headers);
       var responsePayload = json.decode(response.body);
       setState(() {
-        diaries = (responsePayload['diaries'] as List).map((item) => item as Map<String, dynamic>).toList();
+        diaries = (responsePayload['diaries'] as List)
+            .map((item) => item as Map<String, dynamic>)
+            .toList();
       });
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -43,12 +49,6 @@ class _LibraryPageState extends State<LibraryPage> {
             duration: const Duration(seconds: 2),
           ),
         );
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => HomePage(),
-        //   ),
-        // );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -57,7 +57,7 @@ class _LibraryPageState extends State<LibraryPage> {
           ),
         );
       }
-    }catch(e){
+    } catch (e) {
       print(e);
     }
   }
@@ -139,48 +139,53 @@ class _LibraryPageState extends State<LibraryPage> {
                           height: MediaQuery.of(context).size.height * 0.2,
                           decoration: const BoxDecoration(),
                           child: Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                25, 0, 25, 0),
-                            child: ListView.builder(
-                              padding: EdgeInsets.zero,
-                              scrollDirection: Axis.horizontal,
-                              itemCount: diaries.length,
-                              itemBuilder: (context, index) {
-                                 return GestureDetector(
-                                  onTap: () {
-                                    DateTime parsedDate = DateTime.parse(diaries[index]['createdAt']['$date']);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => DiaryPageDetail(key: ValueKey(index) ,date: parsedDate)
-                                      ),
-                                    );
-                                  },
-                                  child: Column(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.asset(
-                                          'assets/book.png', // replace 'imageUrl' with the actual field name
-                                          width: 80,
-                                          height: 100,
-                                          fit: BoxFit.contain,
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  25, 0, 25, 0),
+                              child: ListView.builder(
+                                padding: EdgeInsets.zero,
+                                scrollDirection: Axis.horizontal,
+                                itemCount: diaries.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      DateTime parsedDate = DateTime.parse(
+                                          diaries[index]['createdAt']['$date']);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                DiaryPageDetail(
+                                                    key: ValueKey(index),
+                                                    date: parsedDate)),
+                                      );
+                                    },
+                                    child: Column(
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          child: Image.asset(
+                                            'assets/book.png', // replace 'imageUrl' with the actual field name
+                                            width: 80,
+                                            height: 100,
+                                            fit: BoxFit.contain,
+                                          ),
                                         ),
-                                      ),
-                                      Text("Diary ${index + 1}", // replace 'title' with the actual field name
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: GoogleFonts.suwannaphum().fontFamily,
-                                            color: Colors.black,
-                                          )
-                                      ),
-                                    ],
-                                                                   ),
-                                 );
-                              },
-                            )
-                          ),
+                                        Text(
+                                            "Diary ${index + 1}", // replace 'title' with the actual field name
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily:
+                                                  GoogleFonts.suwannaphum()
+                                                      .fontFamily,
+                                              color: Colors.black,
+                                            )),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              )),
                         ),
                       ],
                     ),
@@ -273,7 +278,7 @@ class _LibraryPageState extends State<LibraryPage> {
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               fontFamily: GoogleFonts.poppins().fontFamily,
-                              color: Color(0xFF1300EB),
+                              color: const Color(0xFF1300EB),
                             ),
                           ),
                         ].toList(),
@@ -371,3 +376,4 @@ class _LibraryPageState extends State<LibraryPage> {
     );
   }
 }
+*/

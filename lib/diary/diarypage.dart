@@ -1,3 +1,4 @@
+/*
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -12,6 +13,7 @@ import './moodsummary.dart';
 import './articlepage.dart';
 
 import 'package:mood_lift/main.dart';
+
 class DiaryPage extends StatefulWidget {
   const DiaryPage({super.key});
 
@@ -21,25 +23,26 @@ class DiaryPage extends StatefulWidget {
 
 class _DiaryPageState extends State<DiaryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
+
+  //-----------------Diary Controller----------------
   final _diarycontroller = TextEditingController();
   final String? url = dotenv.env['SERVER_URL'];
+
   void _createDiary() async {
     final key = encrypt.Key.fromUtf8(dotenv.env['ENCRYPTION_KEY']!);
     final iv = encrypt.IV.fromSecureRandom(16);
-    final encrypter = encrypt.Encrypter(encrypt.AES(key,mode: AESMode.cbc));
-    final encryptedDiary = encrypter.encrypt(_diarycontroller.text, iv:iv);
-    
+    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: AESMode.cbc));
+    final encryptedDiary = encrypter.encrypt(_diarycontroller.text, iv: iv);
+
     String? token = await StorageUtil.storage.read(key: 'idToken');
-    try{
+    try {
       final headers = {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token'
       };
-      var request = {
-        "diary": encryptedDiary.base64,
-        "iv": iv.base64
-        };
-      final response = await http.post(Uri.parse("$url/createDiary"), headers: headers, body: json.encode(request));
+      var request = {"diary": encryptedDiary.base64, "iv": iv.base64};
+      final response = await http.post(Uri.parse("$url/createDiary"),
+          headers: headers, body: json.encode(request));
       var responsePayload = json.decode(response.body);
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -48,12 +51,6 @@ class _DiaryPageState extends State<DiaryPage> {
             duration: const Duration(seconds: 2),
           ),
         );
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => HomePage(),
-        //   ),
-        // );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -62,10 +59,38 @@ class _DiaryPageState extends State<DiaryPage> {
           ),
         );
       }
-    }catch(e){
+    } catch (e) {
       print(e);
     }
   }
+
+  //---------------NLP sentiment Analysis ----------------
+
+  String _result = "";
+
+  void _analyzeSentiment(String text) async {
+    String? token = await StorageUtil.storage.read(key: 'idToken');
+
+    final response = await http.post(
+      Uri.parse("$url/NLPanalyze"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'
+      },
+      body: jsonEncode(<String, String>{'text': text}),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      setState(() {
+        _result =
+            "Sentiment: ${data['sentiment']}, Total Score: ${data['total_score']}%";
+      });
+    } else {
+      throw Exception('Failed to analyze sentiment');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,6 +180,14 @@ class _DiaryPageState extends State<DiaryPage> {
                               color: Colors.black,
                             ),
                             maxLines: 33,
+
+                            //-----------------NLP sentiment Analysis ----------------
+                            onChanged: (text) {
+                              if (text.endsWith('.')) {
+                                _analyzeSentiment(text);
+                                print(_result);
+                              }
+                            },
                           ),
                         ),
                         Stack(
@@ -411,3 +444,4 @@ class _DiaryPageState extends State<DiaryPage> {
     );
   }
 }
+*/

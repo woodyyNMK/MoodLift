@@ -13,6 +13,8 @@ import json
 import firebase_admin
 from firebase_admin import auth as Auth, credentials
 from datetime import datetime
+import requests
+
 app = Flask(__name__)
 cors = CORS(app)
 
@@ -239,3 +241,42 @@ print(user['idToken'])
 info = auth.get_account_info(user['idToken'])
 print(info)
 '''
+
+### NLP Sentiment Analysis ###
+
+API_URL = "https://api-inference.huggingface.co/models/cardiffnlp/twitter-roberta-base-sentiment"
+headers = {"Authorization": "Bearer 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"}
+
+def query(payload):
+    response = requests.post(API_URL, headers=headers, json=payload)
+    return response.json()
+
+@app.route('/NLPanalyze', methods=['POST'])
+def analyze():
+    data = request.json
+    text = data.get('text')
+    
+    output = query({"inputs": text})
+    
+    highest = round(output[0][0]['score'] * 100)
+    left = round((output[0][1]['score'] + output[0][2]['score']) * 100)
+    total_score = sum(item['score'] for item in output[0])
+    total_score_percentage = round(total_score * 100)
+
+    label_mapping = {
+        'LABEL_0': 'Negative',
+        'LABEL_1': 'Neutral',
+        'LABEL_2': 'Positive'
+    }
+    
+    label = output[0][0]['label']
+    mapped_label = label_mapping[label]
+
+    result = {
+        "highest": highest,
+        "left": left,
+        "total_score": total_score_percentage,
+        "sentiment": mapped_label
+    }
+
+    return jsonify(result) 
