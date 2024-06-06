@@ -68,7 +68,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
           image: DecorationImage(
             fit: BoxFit.cover,
             image: Image.asset(
-              'assets/background.png',
+              'assets/images/background.png',
             ).image,
           ),
         ),

@@ -13,6 +13,8 @@ import json
 import firebase_admin
 from firebase_admin import auth as Auth, credentials
 from datetime import datetime
+import requests
+
 app = Flask(__name__)
 cors = CORS(app)
 
@@ -140,13 +142,15 @@ def createDiray():
         try:
             user = db.users.find_one({"_id": uid})
             text = request.json['diary']
+            pos = request.json['positive']
+            neg = request.json['negative']
             if user:
                 diary = {
                     "_id":str(ObjectId()),
                     "text": text,
                     "createdAt": datetime.now(),
-                    "positive": 0,
-                    "negative": 0,
+                    "positive": pos,
+                    "negative": neg,
                 }
                 # print(diary)
                 db.diaries.insert_one(diary)

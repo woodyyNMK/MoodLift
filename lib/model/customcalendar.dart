@@ -79,6 +79,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
                 color: Colors.orange,
                 shape: BoxShape.circle,
               ),
+              
             ),
             headerStyle: const HeaderStyle(
               formatButtonVisible: false,

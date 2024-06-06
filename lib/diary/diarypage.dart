@@ -1,15 +1,17 @@
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:mood_lift/main.dart';
 import 'librarypage.dart';
 import './moodsummary.dart';
 import './articlepage.dart';
+import '../model/colormodel.dart';
+import '../model/musicmodel.dart';
 
 import 'package:mood_lift/main.dart';
 
@@ -22,6 +24,9 @@ class DiaryPage extends StatefulWidget {
 
 class _DiaryPageState extends State<DiaryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
+
+  //-----------------Diary Controller function ----------------
+
   final _diarycontroller = TextEditingController();
   final String? url = dotenv.env['SERVER_URL'];
 
@@ -29,17 +34,22 @@ class _DiaryPageState extends State<DiaryPage> {
 
   void _createDiary() async {
     final key = encrypt.Key.fromUtf8(dotenv.env['ENCRYPTION_KEY']!);
-    final iv = encrypt.IV.fromUtf8(dotenv.env['ENCRYPTION_IV']!);
-    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: AESMode.cbc));
-    final encryptedDiary = encrypter.encrypt(_diarycontroller.text, iv: iv);
-
+    final iv = encrypt.IV.fromSecureRandom(16);
+    final encrypter = encrypt.Encrypter(encrypt.AES(key,mode: AESMode.cbc));
+    final encryptedDiary = encrypter.encrypt(_diarycontroller.text, iv:iv);
+    
     String? token = await StorageUtil.storage.read(key: 'idToken');
     try {
       final headers = {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token'
       };
-      var request = {"diary": encryptedDiary.base64, "iv": iv.base64};
+      var request = {
+        "diary": encryptedDiary.base64,
+        "iv": iv.base64,
+        "positive": _displayHighestScore,
+        "negative": 100 - _displayHighestScore,
+      };
       final response = await http.post(Uri.parse("$url/createDiary"),
           headers: headers, body: json.encode(request));
       var responsePayload = json.decode(response.body);
@@ -50,6 +60,9 @@ class _DiaryPageState extends State<DiaryPage> {
             duration: const Duration(seconds: 2),
           ),
         );
+        setState(() {
+          _diarycontroller.clear();
+        });
         setState(() {
           _diarycontroller.clear();
         });
@@ -66,20 +79,67 @@ class _DiaryPageState extends State<DiaryPage> {
     }
   }
 
+  //---------------NLP sentiment Analysis function----------------
+  final String? nlptoken = dotenv.env['NLP_TOKEN'];
+
+  String _result = "";
+  int _displayHighestScore = 0;
+  String _mood = "";
+
+  LinearGradient _backgroundGradient =
+      BackgroundColors.getSentimentColor('Neutral');
+  void _analyzeSentiment(String text) async {
+    try {
+      final response = await http.post(
+        Uri.parse(
+            'https://api-inference.huggingface.co/models/cardiffnlp/twitter-roberta-base-sentiment'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $nlptoken',
+        },
+        body: jsonEncode(<String, String>{'inputs': text}),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        final highestScore = (data[0][0]['score'] * 100).round();
+        final totalScore =
+            (data[0].fold(0, (sum, item) => sum + item['score']) * 100).round();
+        final labelMapping = {
+          'LABEL_0': 'Negative',
+          'LABEL_1': 'Neutral',
+          'LABEL_2': 'Positive',
+        };
+        final sentiment = labelMapping[data[0][0]['label']];
+        _mood = sentiment.toString();
+
+        setState(() {
+          _result =
+              "Mood: $sentiment, Highest Score: $highestScore%, Total Score: $totalScore%";
+          _displayHighestScore = highestScore;
+
+          _backgroundGradient = BackgroundColors.getSentimentColor(sentiment!);
+          print(sentiment);
+          print(_result);
+        });
+        SoundManager.playSound(sentiment!);
+      } else {
+        throw Exception('Failed to analyze sentiment');
+      }
+    } catch (e) {
+      print("FAILED TO ANALYZE SENTIMENT");
+      throw Exception('Failed to analyze sentiment');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scafflodkey,
-      body: Container(
+      body: AnimatedContainer(
+        duration: const Duration(seconds: 1),
         width: double.infinity,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: Image.asset(
-              'assets/background.png',
-            ).image,
-          ),
-        ),
+        decoration: BoxDecoration(gradient: _backgroundGradient),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
@@ -155,6 +215,11 @@ class _DiaryPageState extends State<DiaryPage> {
                               color: Colors.black,
                             ),
                             maxLines: 33,
+                            onChanged: (_diarycontroller) {
+                              if (_diarycontroller.endsWith('.')) {
+                                _analyzeSentiment(_diarycontroller);
+                              }
+                            },
                           ),
                         ),
                         Stack(
@@ -189,7 +254,13 @@ class _DiaryPageState extends State<DiaryPage> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
-                          '80 %',
+                          _mood == ""
+                              ? "0 %"
+                              : _mood == "Neutral"
+                                  ? "50 %"
+                                  : _mood == "Positive"
+                                      ? '${_displayHighestScore} %'
+                                      : '${100 - _displayHighestScore} %',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -212,7 +283,13 @@ class _DiaryPageState extends State<DiaryPage> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
-                          '20 %',
+                          _mood == ""
+                              ? "0 %"
+                              : _mood == "Neutral"
+                                  ? "50 %"
+                                  : _mood == "Negative"
+                                      ? '${_displayHighestScore} %'
+                                      : '${100 - _displayHighestScore} %',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,

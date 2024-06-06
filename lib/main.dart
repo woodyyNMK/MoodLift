@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mood_lift/model/liquidmodel.dart';
-import './authentication/signUpPage.dart';
+import 'package:mood_lift/diary/diarypage.dart';
 import './authentication/logInPage.dart';
-import './diary/diarypage.dart';
-import './diary/diaryviewpage.dart';
-import 'diary/librarypage.dart';
-import './diary/moodsummary.dart';
+import './authentication/forgotPassword.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:auth_state_manager/auth_state_manager.dart';

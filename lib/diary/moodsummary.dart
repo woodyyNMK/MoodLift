@@ -61,7 +61,7 @@ void _logout() async {
           image: DecorationImage(
             fit: BoxFit.cover,
             image: Image.asset(
-              'assets/background.png',
+              'assets/images/background.png',
             ).image,
           ),
         ),
@@ -453,6 +453,15 @@ void _logout() async {
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(
+                      'assets/images/dog.png',
+                      width: 200,
+                      height: 221,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ],

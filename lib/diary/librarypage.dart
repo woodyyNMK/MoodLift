@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mood_lift/diary/diaryviewpage.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:mood_lift/main.dart';
 import 'dart:convert';
+
 class LibraryPage extends StatefulWidget {
   const LibraryPage({super.key});
 
@@ -25,15 +27,19 @@ class _LibraryPageState extends State<LibraryPage> {
   void _showDiaries({required DateTime selectedDateTime}) async {
     String? token = await StorageUtil.storage.read(key: 'idToken');
     final DateTime param = selectedDateTime;
-    try{
+
+    try {
       final headers = {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token'
       };
-      final response = await http.get(Uri.parse("$url/showDiaries?param=$param"), headers: headers);
+      final response = await http
+          .get(Uri.parse("$url/showDiaries?param=$param"), headers: headers);
       var responsePayload = json.decode(response.body);
       setState(() {
-        diaries = (responsePayload['diaries'] as List).map((item) => item as Map<String, dynamic>).toList();
+        diaries = (responsePayload['diaries'] as List)
+            .map((item) => item as Map<String, dynamic>)
+            .toList();
       });
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -50,7 +56,7 @@ class _LibraryPageState extends State<LibraryPage> {
           ),
         );
       }
-    }catch(e){
+    } catch (e) {
       print(e);
     }
   }
@@ -65,7 +71,7 @@ class _LibraryPageState extends State<LibraryPage> {
           image: DecorationImage(
             fit: BoxFit.cover,
             image: Image.asset(
-              'assets/background.png',
+              'assets/images/background.png',
             ).image,
           ),
         ),
@@ -268,7 +274,7 @@ class _LibraryPageState extends State<LibraryPage> {
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               fontFamily: GoogleFonts.poppins().fontFamily,
-                              color: Color(0xFF1300EB),
+                              color: const Color(0xFF1300EB),
                             ),
                           ),
                         ].toList(),
