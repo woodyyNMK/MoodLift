@@ -242,6 +242,15 @@ class _MoodSummaryState extends State<MoodSummary> {
                       ].toList(),
                     ),
                   ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(
+                      'assets/dog.png',
+                      width: 200,
+                      height: 230,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                   Container(
                     width: double.infinity,
                     height: 87,
@@ -407,15 +416,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                       ],
                     ),
                   ),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(
-                      'assets/dog.png',
-                      width: 200,
-                      height: 221,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
+                  
                 ],
               ),
             ),
