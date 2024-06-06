@@ -92,7 +92,11 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                         size: 34,
                       ),
                       onPressed: () {
-                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LibraryPage(),
+                            ));
                       },
                     ),
                   ),

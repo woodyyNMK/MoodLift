@@ -26,6 +26,12 @@ void _logout() async {
     await StorageUtil.storage.delete(key: 'refreshToken');
     await StorageUtil.storage.delete(key: 'expiresIn');
 
+    ScaffoldMessenger.of(scafflodkey.currentContext!).showSnackBar(
+      const SnackBar(
+        content: Text("Successfully logged out"),
+        duration: Duration(seconds: 2),
+      ),
+    );
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -33,12 +39,6 @@ void _logout() async {
       ),
     );
 
-    ScaffoldMessenger.of(scafflodkey.currentContext!).showSnackBar(
-      const SnackBar(
-        content: Text("Successfully logged out"),
-        duration: Duration(seconds: 2),
-      ),
-    );
   }
 
   void _handleMonthChanged(DateTime newMonth) {

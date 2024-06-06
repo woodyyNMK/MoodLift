@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mood_lift/authentication/forgotPassword.dart';
 import 'package:mood_lift/main.dart';
 import "../diary/diarypage.dart";
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -59,9 +60,9 @@ class _LogInPageState extends State<LogInPage> {
         "iv": iv.base64
       };
       final response = await http.post(
-          Uri.parse("$url/login"),
-          headers: headers,
-          body: json.encode(request));
+        Uri.parse("$url/login"),
+        headers: headers,
+        body: json.encode(request));
       var responsePayload = json.decode(response.body);
       if (response.statusCode == 200) {
         //to Store the token in the local storage
@@ -377,12 +378,12 @@ class _LogInPageState extends State<LogInPage> {
                         ),
                         TextButton(
                           onPressed: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => SignUpPage(),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ForgotPasswordPage(),
+                              ),
+                            );
                           },
                           child: Text(
                             "Forget Password ?",

@@ -66,6 +66,7 @@ class _SignUpPageState extends State<SignUpPage> {
         final response = await http.post(Uri.parse("$url/register"),
             headers: headers, body: json.encode(request));
         var responsePayload = json.decode(response.body);
+        print(response.statusCode.runtimeType);
         if (response.statusCode == 200) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -73,12 +74,7 @@ class _SignUpPageState extends State<SignUpPage> {
               duration: const Duration(seconds: 2),
             ),
           );
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => HomePage(),
-          //   ),
-          // );
+          Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

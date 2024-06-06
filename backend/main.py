@@ -70,11 +70,15 @@ def login():
         
         # Decrypt and unpad the password
         decryptedpassword = unpad(cipher.decrypt(encrypted_password), AES.block_size).decode('utf-8')
-        # print(f'Decrypted Password: {decryptedpassword}')
+        print(f'Decrypted Password: {decryptedpassword}')
         
         try:
             user = auth.sign_in_with_email_and_password(email, decryptedpassword)
-            # info = auth.get_account_info(user['idToken'])
+            info = auth.get_account_info(user['idToken'])
+            print(info)
+            user_doc = db.users.find_one({"_id": user['idToken']})
+            if user_doc:
+                db.users.update_one({"_id": user['idToken']}, {"$set": {"password": info['users'][0]['passwordHash']}})
 
             response = {
                 "idToken": user['idToken'],
@@ -88,6 +92,29 @@ def login():
                 "message": "Invalid Credentials"
             }
             return json.dumps(response), 401 
+
+@app.route("/resetPassword", methods=['POST'])
+def resetPassword():
+    email = request.json['email']
+    print(email)
+    try:
+        user = Auth.get_user_by_email(email)
+        print(user)
+        auth.send_password_reset_email(email)
+        response = {
+            "message": "Password reset email sent"
+        }
+        return json.dumps(response), 200
+    except Auth.UserNotFoundError:
+        response = {
+            "message": "You need to create account first"
+        }
+        return json.dumps(response), 404
+    except:
+        response = {
+            "message": "Error sending password reset email"
+        }
+        return json.dumps(response), 401
 
 @app.route("/register", methods=['POST'])
 def register():
@@ -111,23 +138,24 @@ def register():
     # print(f'Decrypted Password: {decryptedpassword}')
     try:
         user = auth.create_user_with_email_and_password(email, decryptedpassword)
+        auth.send_email_verification(user['idToken'])
         info = auth.get_account_info(user['idToken'])
         db.users.insert_one({
             "displayName": name,
             "email": user["email"],
             "_id": user["localId"],
             "password": info['users'][0]['passwordHash'],
-            "createdAt": datetime.datetime.now()
+            "createdAt": datetime.now()
         })
         response = {
-            "message": "Successfully logged in"
+            "message": "Successfully Created Account"
         }
         return json.dumps(response), 200
     except:
         response = {
             "message": "Email already exists"
         }
-        return json.dump(response), 401
+        return json.dumps(response), 401
     
 @app.route("/createDiary", methods=['POST'])
 def createDiray():
@@ -192,7 +220,7 @@ def updateDiary():
     try:
         decoded_token = Auth.verify_id_token(token)
         uid = decoded_token['uid']
-        # print(f"Decoded UID: {uid}")
+        print(f"Decoded UID: {uid}")
 
         id = request.args.get('param')
         if not id:
@@ -200,7 +228,7 @@ def updateDiary():
                 "message": "Missing diary ID"
             }
             return json.dumps(response), 400
-        # print(f"Diary ID: {id}")
+        print(f"Diary ID: {id}")
         text = request.json.get('diary')
         if not text:
             response = {
@@ -210,7 +238,7 @@ def updateDiary():
 
         try:
             user_doc = db.users.find_one({"_id": uid})
-            # print(f"User document: {user_doc}")
+            print(f"User document: {user_doc}")
 
             if user_doc:
                 if 'diaries' in user_doc and id in user_doc['diaries']:
@@ -300,8 +328,8 @@ email = input("Enter email: ")
 password = input("Enter password: ")
 # user = auth.create_user_with_email_and_password(email, password)
 user = auth.sign_in_with_email_and_password(email, password)
-# print(user)
-print(user['idToken'])
+print(user)
+# print(user['idToken'])
 info = auth.get_account_info(user['idToken'])
 print(info)
 '''
