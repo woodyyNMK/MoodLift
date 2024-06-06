@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mood_lift/main.dart';
 import "../diary/diarypage.dart";
 import 'package:encrypt/encrypt.dart' as encrypt;
+import './signUpPage.dart'; 
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -438,12 +439,12 @@ class _LogInPageState extends State<LogInPage> {
                         ),
                         TextButton(
                           onPressed: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => SignUpPage(),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SignUpPage(),
+                              ),
+                            );
                           },
                           child: Text(
                             "Sign Up",
