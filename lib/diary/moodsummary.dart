@@ -26,13 +26,10 @@ void _logout() async {
     await StorageUtil.storage.delete(key: 'refreshToken');
     await StorageUtil.storage.delete(key: 'expiresIn');
 
-    Navigator.pushReplacement(
+    Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Scaffold(
-          body: LogInPage(),
-          key: scafflodkey,
-        ),
+        builder: (context) => LogInPage(),
       ),
     );
 
