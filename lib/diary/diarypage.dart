@@ -12,8 +12,7 @@ import './moodsummary.dart';
 import './articlepage.dart';
 import '../model/colormodel.dart';
 import '../model/musicmodel.dart';
-
-import 'package:mood_lift/main.dart';
+import '../model/nlpanalyze.dart';
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({super.key});
@@ -47,8 +46,9 @@ class _DiaryPageState extends State<DiaryPage> {
       var request = {
         "diary": encryptedDiary.base64,
         "iv": iv.base64,
-        "positive": _displayHighestScore,
-        "negative": 100 - _displayHighestScore,
+        "positive": _positive,
+        "negative": _negative,
+        "neutral": _neutral
       };
       final response = await http.post(Uri.parse("$url/createDiary"),
           headers: headers, body: json.encode(request));
@@ -80,56 +80,23 @@ class _DiaryPageState extends State<DiaryPage> {
   }
 
   //---------------NLP sentiment Analysis function----------------
-  final String? nlptoken = dotenv.env['NLP_TOKEN'];
-
-  String _result = "";
-  int _displayHighestScore = 0;
   String _mood = "";
+  double _negative = 0;
+  double _neutral = 0;
+  double _positive = 0;
 
   LinearGradient _backgroundGradient =
       BackgroundColors.getSentimentColor('Neutral');
-  void _analyzeSentiment(String text) async {
-    try {
-      final response = await http.post(
-        Uri.parse(
-            'https://api-inference.huggingface.co/models/cardiffnlp/twitter-roberta-base-sentiment'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $nlptoken',
-        },
-        body: jsonEncode(<String, String>{'inputs': text}),
-      );
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        final highestScore = (data[0][0]['score'] * 100).round();
-        final totalScore =
-            (data[0].fold(0, (sum, item) => sum + item['score']) * 100).round();
-        final labelMapping = {
-          'LABEL_0': 'Negative',
-          'LABEL_1': 'Neutral',
-          'LABEL_2': 'Positive',
-        };
-        final sentiment = labelMapping[data[0][0]['label']];
-        _mood = sentiment.toString();
-
-        setState(() {
-          _result =
-              "Mood: $sentiment, Highest Score: $highestScore%, Total Score: $totalScore%";
-          _displayHighestScore = highestScore;
-
-          _backgroundGradient = BackgroundColors.getSentimentColor(sentiment!);
-          print(sentiment);
-          print(_result);
-        });
-        SoundManager.playSound(sentiment!);
-      } else {
-        throw Exception('Failed to analyze sentiment');
-      }
-    } catch (e) {
-      print("FAILED TO ANALYZE SENTIMENT");
-      throw Exception('Failed to analyze sentiment');
-    }
+  void _updateSentimentState(
+      String sentiment, double positive, double neutral, double negative) {
+    setState(() {
+      _mood = sentiment;
+      _positive = positive;
+      _neutral = neutral;
+      _negative = negative;
+      _backgroundGradient = BackgroundColors.getSentimentColor(sentiment);
+    });
   }
 
   @override
@@ -140,7 +107,7 @@ class _DiaryPageState extends State<DiaryPage> {
         duration: const Duration(seconds: 1),
         width: double.infinity,
         decoration: _mood == "Neutral" || _mood == ""
-            ?  BoxDecoration(
+            ? BoxDecoration(
                 image: DecorationImage(
                   fit: BoxFit.cover,
                   image: Image.asset(
@@ -225,8 +192,11 @@ class _DiaryPageState extends State<DiaryPage> {
                             ),
                             maxLines: 33,
                             onChanged: (_diarycontroller) {
+                              SentimentAnalyzer sentimentAnalyzer =
+                                  SentimentAnalyzer();
                               if (_diarycontroller.endsWith('.')) {
-                                _analyzeSentiment(_diarycontroller);
+                                sentimentAnalyzer.analyzeSentiment(
+                                    _diarycontroller, _updateSentimentState);
                               }
                             },
                           ),
@@ -266,13 +236,7 @@ class _DiaryPageState extends State<DiaryPage> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
-                          _mood == ""
-                              ? "0 %"
-                              : _mood == "Neutral"
-                                  ? "50 %"
-                                  : _mood == "Positive"
-                                      ? '${_displayHighestScore} %'
-                                      : '${100 - _displayHighestScore} %',
+                          _mood == "" ? "0 %" : '$_positive %',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -295,13 +259,7 @@ class _DiaryPageState extends State<DiaryPage> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Text(
-                          _mood == ""
-                              ? "0 %"
-                              : _mood == "Neutral"
-                                  ? "50 %"
-                                  : _mood == "Negative"
-                                      ? '${_displayHighestScore} %'
-                                      : '${100 - _displayHighestScore} %',
+                          _mood == "" ? "0 %" : '$_negative %',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
