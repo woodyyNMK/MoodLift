@@ -21,7 +21,7 @@ class _MoodSummaryState extends State<MoodSummary> {
   final scafflodkey = GlobalKey<ScaffoldState>();
   DateTime _selectedMonth = DateTime.now(); // New variable
 
-void _logout() async {
+  void _logout() async {
     await StorageUtil.storage.delete(key: 'idToken');
     await StorageUtil.storage.delete(key: 'refreshToken');
     await StorageUtil.storage.delete(key: 'expiresIn');

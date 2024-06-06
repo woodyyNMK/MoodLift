@@ -35,9 +35,9 @@ class _DiaryPageState extends State<DiaryPage> {
   void _createDiary() async {
     final key = encrypt.Key.fromUtf8(dotenv.env['ENCRYPTION_KEY']!);
     final iv = encrypt.IV.fromUtf8(dotenv.env['ENCRYPTION_IV']!);
-    final encrypter = encrypt.Encrypter(encrypt.AES(key,mode: AESMode.cbc));
-    final encryptedDiary = encrypter.encrypt(_diarycontroller.text, iv:iv);
-    
+    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: AESMode.cbc));
+    final encryptedDiary = encrypter.encrypt(_diarycontroller.text, iv: iv);
+
     String? token = await StorageUtil.storage.read(key: 'idToken');
     try {
       final headers = {
@@ -139,7 +139,16 @@ class _DiaryPageState extends State<DiaryPage> {
       body: AnimatedContainer(
         duration: const Duration(seconds: 1),
         width: double.infinity,
-        decoration: BoxDecoration(gradient: _backgroundGradient),
+        decoration: _mood == "Neutral" || _mood == ""
+            ?  BoxDecoration(
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: Image.asset(
+                    'assets/images/background.png',
+                  ).image,
+                ),
+              )
+            : BoxDecoration(gradient: _backgroundGradient),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
@@ -232,7 +241,10 @@ class _DiaryPageState extends State<DiaryPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(36),
                                 ),
-                                onPressed: _createDiary,
+                                onPressed: () {
+                                  SoundManager.stopSound();
+                                  _createDiary();
+                                },
                                 child: const FaIcon(
                                   FontAwesomeIcons.check,
                                   color: Color(0xFF000000),
