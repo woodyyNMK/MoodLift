@@ -14,8 +14,8 @@ class SoundManager {
     var audioPaths = _audioPaths[sentiment];
     if (audioPaths != null && audioPaths.isNotEmpty) {
       var audioPath = audioPaths[_random.nextInt(audioPaths.length)];
-      await _audioPlayer.setReleaseMode(ReleaseMode.LOOP);
-      await _audioPlayer.play(audioPath, isLocal: true);
+      await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+      await _audioPlayer.play(DeviceFileSource(audioPath));
     }
   }
 
