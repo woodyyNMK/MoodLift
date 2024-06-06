@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mood_lift/authentication/logInPage.dart';
@@ -9,6 +11,8 @@ import "../model/monthselector.dart";
 import './diarypage.dart';
 import 'librarypage.dart';
 import './articlepage.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MoodSummary extends StatefulWidget {
   const MoodSummary({super.key});
@@ -20,7 +24,7 @@ class MoodSummary extends StatefulWidget {
 class _MoodSummaryState extends State<MoodSummary> {
   final scafflodkey = GlobalKey<ScaffoldState>();
   DateTime _selectedMonth = DateTime.now(); // New variable
-
+  final String? url = dotenv.env['SERVER_URL'];
   void _logout() async {
     await StorageUtil.storage.delete(key: 'idToken');
     await StorageUtil.storage.delete(key: 'refreshToken');
@@ -38,16 +42,46 @@ class _MoodSummaryState extends State<MoodSummary> {
         builder: (context) => LogInPage(),
       ),
     );
-
   }
 
-  void _handleMonthChanged(DateTime newMonth) {
-    // New function
+  Future<void> _handleMonthChanged(DateTime newMonth) async {
     setState(() {
       _selectedMonth = newMonth;
     });
-    print(
-        "Selected month: ${_selectedMonth.month}/${_selectedMonth.year}"); // Print the selected month and year
+
+    String? token = await StorageUtil.storage.read(key: 'idToken');
+    final DateTime param = _selectedMonth;
+    try {
+      final headers = {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'
+      };
+      final response = await http.get(
+        Uri.parse("$url/showSummary?param=$param"),
+        headers: headers,
+      );
+      var responsePayload = json.decode(response.body);
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responsePayload['message']),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        // print(responsePayload['averagePositive']);
+        // print(responsePayload['averageNegative']);
+        // print(responsePayload['averageNeutral']);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responsePayload['message']),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override

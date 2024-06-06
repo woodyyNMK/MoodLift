@@ -36,12 +36,13 @@ class _LibraryPageState extends State<LibraryPage> {
       final response = await http
           .get(Uri.parse("$url/showDiaries?param=$param"), headers: headers);
       var responsePayload = json.decode(response.body);
-      setState(() {
-        diaries = (responsePayload['diaries'] as List)
+
+      if (response.statusCode == 200) {
+        setState(() {
+          diaries = (responsePayload['diaries'] as List)
             .map((item) => item as Map<String, dynamic>)
             .toList();
       });
-      if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(responsePayload['message']),

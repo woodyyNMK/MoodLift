@@ -173,6 +173,7 @@ def createDiray():
             text = request.json['diary']
             pos = request.json['positive']
             neg = request.json['negative']
+            neutral = request.json['neutral']
             if user:
                 diary = {
                     "_id":str(ObjectId()),
@@ -180,6 +181,7 @@ def createDiray():
                     "createdAt": datetime.now(),
                     "positive": pos,
                     "negative": neg,
+                    "neutral": neutral,
                 }
                 # print(diary)
                 db.diaries.insert_one(diary)
@@ -289,7 +291,9 @@ def showDiaries():
         try:
             # Get the date parameter from the query string and convert it to a datetime object
             selectedDateTime = request.args.get('param')
+            print(selectedDateTime)
             date = datetime.strptime(selectedDateTime, "%Y-%m-%d %H:%M:%S.%fZ")
+            print(date)
             # Fetch the user document from the users collection
             user = db.users.find_one({"_id": uid})
             if user and 'diaries' in user:
@@ -324,6 +328,85 @@ def showDiaries():
             "message": "Unauthorized"
         }
         return json.dumps(response), 401 
+
+@app.route("/showSummary", methods=['GET'])
+def showSummary():
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        token = auth_header.split(" ")[1]
+    else:
+        token = ''
+    if token != '':
+        decoded_token = Auth.verify_id_token(token)
+        uid = decoded_token['uid']
+
+        try:
+            # Get the date parameter from the query string and convert it to a datetime object
+            selectedDateTime = request.args.get('param')
+
+            date = datetime.strptime(selectedDateTime, "%Y-%m-%d %H:%M:%S.%f")
+
+            # Fetch the user document from the users collection
+            user = db.users.find_one({"_id": uid})
+
+            # Define the start and end dates
+            start_date = datetime(date.year, date.month, 1)
+            if date.month == 12:
+                end_date = datetime(date.year + 1, 1, 1)
+            else:
+                end_date = datetime(date.year, date.month + 1, 1)
+
+            if user and 'diaries' in user:
+                # Fetch the diaries for the given date
+                pipeline = [
+                    {"$match": {
+                        "createdAt": {
+                            "$gte": start_date,
+                            "$lt": end_date
+                        }
+                    }},
+                    {"$group": {
+                        "_id": None,
+                        "totalPositive": {"$sum": "$positive"},
+                        "totalNegative": {"$sum": "$negative"},
+                        "totalNeutral": {"$sum": "$neutral"},
+                        "count": {"$sum": 1}
+                    }},
+                    {"$project": {
+                        "averagePositive": {"$divide": ["$totalPositive", "$count"]},
+                        "averageNegative": {"$divide": ["$totalNegative", "$count"]},
+                        "averageNeutral": {"$divide": ["$totalNeutral", "$count"]}
+                    }}
+                ]
+                result = db.diaries.aggregate(pipeline)
+                averages = list(result)
+                if averages:
+                    response = {
+                    "message": "Here's the summary for selected month",
+                    "averagePositive": averages[0]['averagePositive'],
+                    "averageNegative": averages[0]['averageNegative'],
+                    "averageNeutral": averages[0]['averageNeutral']
+                }
+
+                return json.dumps(response), 200
+        except:
+            response = {
+                "message": "No diaries for selected Month"
+            }
+            return json.dumps(response), 401
+    else:
+        response = {
+            "message": "Unauthorized"
+        }
+        return json.dumps(response), 401
+
+
+
+
+
+
+
+
 '''
 email = input("Enter email: ")
 password = input("Enter password: ")
