@@ -198,6 +198,9 @@ class _DiaryPageState extends State<DiaryPage> {
                                 sentimentAnalyzer.analyzeSentiment(
                                     _diarycontroller, _updateSentimentState);
                               }
+                              if (_diarycontroller == "") {
+                                SoundManager.stopSound();
+                              }
                             },
                           ),
                         ),
@@ -328,6 +331,7 @@ class _DiaryPageState extends State<DiaryPage> {
                         //--------------Library----------------
                         GestureDetector(
                           onTap: () {
+                            SoundManager.stopSound();
                             Navigator.push(
                               context,
                               PageRouteBuilder(
@@ -370,6 +374,7 @@ class _DiaryPageState extends State<DiaryPage> {
                         //--------------Statistics----------------
                         GestureDetector(
                           onTap: () {
+                            SoundManager.stopSound();
                             Navigator.push(
                               context,
                               PageRouteBuilder(
@@ -411,6 +416,7 @@ class _DiaryPageState extends State<DiaryPage> {
                         //--------------Articles----------------
                         GestureDetector(
                           onTap: () {
+                            SoundManager.stopSound();
                             Navigator.push(
                               context,
                               PageRouteBuilder(
