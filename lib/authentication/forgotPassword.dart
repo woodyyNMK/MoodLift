@@ -149,7 +149,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                       fontSize: 12,
                                       fontFamily:
                                           GoogleFonts.splineSans().fontFamily,
-                                      color: const Color(0xFFA0A5BA),
+                                      color: Colors.black,
                                     ),
                                     enabledBorder: InputBorder.none,
                                     focusedBorder: InputBorder.none,
@@ -187,7 +187,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             backgroundColor: const Color(0x981694B6),
                             elevation: 3,
                             child: const Text(
-                              'Sign Up',
+                              'Reset Password',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,

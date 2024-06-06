@@ -18,4 +18,8 @@ class SoundManager {
       await _audioPlayer.play(audioPath, isLocal: true);
     }
   }
+
+  static Future<void> stopSound() async {
+    await _audioPlayer.stop();
+  }
 }

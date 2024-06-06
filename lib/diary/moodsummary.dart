@@ -21,7 +21,7 @@ class _MoodSummaryState extends State<MoodSummary> {
   final scafflodkey = GlobalKey<ScaffoldState>();
   DateTime _selectedMonth = DateTime.now(); // New variable
 
-void _logout() async {
+  void _logout() async {
     await StorageUtil.storage.delete(key: 'idToken');
     await StorageUtil.storage.delete(key: 'refreshToken');
     await StorageUtil.storage.delete(key: 'expiresIn');
@@ -284,7 +284,7 @@ void _logout() async {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.asset(
-                      'assets/dog.png',
+                      'assets/images/dog.png',
                       width: 200,
                       height: 230,
                       fit: BoxFit.contain,
@@ -453,15 +453,6 @@ void _logout() async {
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(
-                      'assets/images/dog.png',
-                      width: 200,
-                      height: 221,
-                      fit: BoxFit.contain,
                     ),
                   ),
                 ],
