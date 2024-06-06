@@ -51,7 +51,8 @@ dependencies:
   percent_indicator: ^4.0.0
   http: ^0.13.3
   audioplayers: ^0.20.1
-
+  flutter_countdown_timer: 4.1.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

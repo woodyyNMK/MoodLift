@@ -39,7 +39,7 @@ class _MoodSummaryState extends State<MoodSummary> {
           image: DecorationImage(
             fit: BoxFit.cover,
             image: Image.asset(
-              'assets/background.png',
+              'assets/images/background.png',
             ).image,
           ),
         ),
@@ -410,7 +410,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.asset(
-                      'assets/dog.png',
+                      'assets/images/dog.png',
                       width: 200,
                       height: 221,
                       fit: BoxFit.contain,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './authentication/logInPage.dart';
+import './authentication/forgotPassword.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:auth_state_manager/auth_state_manager.dart';
@@ -36,7 +37,7 @@ class _MyAppState extends State<MyApp> {
     return const MaterialApp(
       title: 'Sign Up Page',
       home: Scaffold(
-        body: LogInPage(),
+        body: ForgotPasswordPage(),
       ),
     );
   }

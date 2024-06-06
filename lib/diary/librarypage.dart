@@ -165,7 +165,7 @@ class _LibraryPageState extends State<LibraryPage> {
                                           borderRadius:
                                               BorderRadius.circular(8),
                                           child: Image.asset(
-                                            'assets/book.png', // replace 'imageUrl' with the actual field name
+                                            'assets/images/book.png', // replace 'imageUrl' with the actual field name
                                             width: 80,
                                             height: 100,
                                             fit: BoxFit.contain,

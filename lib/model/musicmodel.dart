@@ -7,7 +7,7 @@ class SoundManager {
   static final Map<String, List<String>> _audioPaths = {
     'Positive': ['assets/music/positive1.mp3', 'assets/music/positive2.mp3'],
     'Negative': ['assets/music/negative1.mp3', 'assets/music/negative2.mp3'],
-    'Neutral': ['assets/music/neutral1.mp3']
+    'Neutral': ['assets/music/neutral.mp3']
   };
 
   static Future<void> playSound(String sentiment) async {
