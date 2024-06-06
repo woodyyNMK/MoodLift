@@ -12,6 +12,7 @@ import './moodsummary.dart';
 import './articlepage.dart';
 
 import 'package:mood_lift/main.dart';
+
 class DiaryPage extends StatefulWidget {
   const DiaryPage({super.key});
 
@@ -23,23 +24,24 @@ class _DiaryPageState extends State<DiaryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
   final _diarycontroller = TextEditingController();
   final String? url = dotenv.env['SERVER_URL'];
+
+  //-----------------Create Diary in DB Function ----------------
+
   void _createDiary() async {
     final key = encrypt.Key.fromUtf8(dotenv.env['ENCRYPTION_KEY']!);
     final iv = encrypt.IV.fromUtf8(dotenv.env['ENCRYPTION_IV']!);
-    final encrypter = encrypt.Encrypter(encrypt.AES(key,mode: AESMode.cbc));
-    final encryptedDiary = encrypter.encrypt(_diarycontroller.text, iv:iv);
-    
+    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: AESMode.cbc));
+    final encryptedDiary = encrypter.encrypt(_diarycontroller.text, iv: iv);
+
     String? token = await StorageUtil.storage.read(key: 'idToken');
-    try{
+    try {
       final headers = {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token'
       };
-      var request = {
-        "diary": encryptedDiary.base64,
-        "iv": iv.base64
-        };
-      final response = await http.post(Uri.parse("$url/createDiary"), headers: headers, body: json.encode(request));
+      var request = {"diary": encryptedDiary.base64, "iv": iv.base64};
+      final response = await http.post(Uri.parse("$url/createDiary"),
+          headers: headers, body: json.encode(request));
       var responsePayload = json.decode(response.body);
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -48,12 +50,9 @@ class _DiaryPageState extends State<DiaryPage> {
             duration: const Duration(seconds: 2),
           ),
         );
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => HomePage(),
-        //   ),
-        // );
+        setState(() {
+          _diarycontroller.clear();
+        });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -62,10 +61,11 @@ class _DiaryPageState extends State<DiaryPage> {
           ),
         );
       }
-    }catch(e){
+    } catch (e) {
       print(e);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
