@@ -86,14 +86,6 @@ def login():
                 "message": "Invalid Credentials"
             }
             return json.dumps(response), 401 
-        
-@app.route("/logout")
-def logout():
-    session.pop('user', None)
-    response = {
-        "message": "Successfully logged out"
-    }
-    return json.dumps(response), 200
 
 @app.route("/register", methods=['POST'])
 def register():
@@ -156,7 +148,7 @@ def createDiray():
                     "positive": 0,
                     "negative": 0,
                 }
-                print(diary)
+                # print(diary)
                 db.diaries.insert_one(diary)
                 db.users.update_one({"_id": uid}, {"$push": {"diaries": diary["_id"]}})
                 response = {
@@ -196,7 +188,7 @@ def updateDiary():
     try:
         decoded_token = Auth.verify_id_token(token)
         uid = decoded_token['uid']
-        print(f"Decoded UID: {uid}")
+        # print(f"Decoded UID: {uid}")
 
         id = request.args.get('param')
         if not id:
@@ -204,7 +196,7 @@ def updateDiary():
                 "message": "Missing diary ID"
             }
             return json.dumps(response), 400
-        print(f"Diary ID: {id}")
+        # print(f"Diary ID: {id}")
         text = request.json.get('diary')
         if not text:
             response = {
@@ -214,7 +206,7 @@ def updateDiary():
 
         try:
             user_doc = db.users.find_one({"_id": uid})
-            print(f"User document: {user_doc}")
+            # print(f"User document: {user_doc}")
 
             if user_doc:
                 if 'diaries' in user_doc and id in user_doc['diaries']:
@@ -235,7 +227,7 @@ def updateDiary():
                 return json.dumps(response), 404
 
         except Exception as db_error:
-            print(f"Database error: {db_error}")
+            # print(f"Database error: {db_error}")
             response = {
                 "message": "Error accessing user document",
                 "error": str(db_error)
@@ -243,7 +235,7 @@ def updateDiary():
             return json.dumps(response), 500
 
     except Exception as e:
-        print(f"Error: {e}")
+        # print(f"Error: {e}")
         response = {
             "message": "Error updating diary",
             "error": str(e)
@@ -278,7 +270,7 @@ def showDiaries():
                 })
                 # Convert the diaries to a list and return them in the response
                 diaries_list = list(diaries)
-                print(diaries_list)
+                # print(diaries_list)
                 response = {
                     "diaries": diaries_list,
                     "message": "Diaries fetched successfully",

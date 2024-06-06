@@ -37,12 +37,27 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final storage = const FlutterSecureStorage();
 
+  Future<String?> getToken() async {
+    return await storage.read(key: 'idToken');
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Sign Up Page',
-      home: Scaffold(
-        body: LogInPage(),
+    return MaterialApp(
+      title: 'Mood Lift',
+      home: FutureBuilder<String?>(
+        future: getToken(),
+        builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator(); // Show a loading spinner while waiting
+          } else {
+            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+              return Scaffold(body : DiaryPage()); // If the token exists, redirect to DiaryPage
+            } else {
+              return Scaffold(body : LogInPage()); // If the token doesn't exist, redirect to LogInPage
+            }
+          }
+        },
       ),
     );
   }

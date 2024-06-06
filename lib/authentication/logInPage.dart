@@ -98,7 +98,9 @@ class _LogInPageState extends State<LogInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return MaterialApp(
+      home: Scaffold(
+        body: Container(
       //I want responsive height of the container
       // height: MediaQuery.of(context).size.height * 1,
       decoration: const BoxDecoration(
@@ -465,6 +467,8 @@ class _LogInPageState extends State<LogInPage> {
           ),
         ],
       ),
-    );
+    )
+  )
+  );
   }
 }

@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mood_lift/authentication/logInPage.dart';
+import 'package:mood_lift/main.dart';
 import 'package:mood_lift/model/liquidmodel.dart';
 import "../model/monthselector.dart";
 import './diarypage.dart';
@@ -18,6 +20,29 @@ class MoodSummary extends StatefulWidget {
 class _MoodSummaryState extends State<MoodSummary> {
   final scafflodkey = GlobalKey<ScaffoldState>();
   DateTime _selectedMonth = DateTime.now(); // New variable
+
+void _logout() async {
+    await StorageUtil.storage.delete(key: 'idToken');
+    await StorageUtil.storage.delete(key: 'refreshToken');
+    await StorageUtil.storage.delete(key: 'expiresIn');
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          body: LogInPage(),
+          key: scafflodkey,
+        ),
+      ),
+    );
+
+    ScaffoldMessenger.of(scafflodkey.currentContext!).showSnackBar(
+      const SnackBar(
+        content: Text("Successfully logged out"),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
 
   void _handleMonthChanged(DateTime newMonth) {
     // New function
@@ -52,25 +77,42 @@ class _MoodSummaryState extends State<MoodSummary> {
               //-----------------------Title----------------------
 
               child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'Mood Summary',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: GoogleFonts.suwannaphum().fontFamily,
-                      color: const Color.fromRGBO(22, 148, 182, 1),
-                      shadows: const [
-                        Shadow(
-                          color: Color.fromRGBO(0, 0, 0, 0.25),
-                          offset: Offset(0, 8),
-                          blurRadius: 8,
-                        )
-                      ],
+                  Flexible(
+                    child: Padding(
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(25, 0, 0, 0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Mood Summary',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: GoogleFonts.suwannaphum().fontFamily,
+                              color: const Color.fromRGBO(22, 148, 182, 1),
+                              shadows: const [
+                                Shadow(
+                                  color: Color.fromRGBO(0, 0, 0, 0.25),
+                                  offset: Offset(0, 8),
+                                  blurRadius: 8,
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
+                  IconButton(
+                      onPressed: _logout,
+                      icon: const Icon(
+                        Icons.logout_outlined,
+                        color: Colors.black,
+                        size: 34,
+                      )),
                 ],
               ),
             ),
@@ -416,7 +458,6 @@ class _MoodSummaryState extends State<MoodSummary> {
                       ],
                     ),
                   ),
-                  
                 ],
               ),
             ),

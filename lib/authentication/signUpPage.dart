@@ -5,7 +5,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:mood_lift/authentication/logInPage.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
