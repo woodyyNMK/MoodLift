@@ -9,11 +9,14 @@ import './diarypage.dart';
 import 'librarypage.dart';
 import './moodsummary.dart';
 import './articlepage.dart';
+import './diaryviewpage.dart';
 import 'package:intl/intl.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import '../model/nlpanalyze.dart';
+import '../model/colormodel.dart';
 
 class DiaryPageDetail extends StatefulWidget {
   final String text;
@@ -45,7 +48,27 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
   final iv = encrypt.IV.fromUtf8(dotenv.env['ENCRYPTION_IV']!);
   encrypt.Encrypter? encrypter;
 
-  late TextEditingController _diaryTextController;
+  var _diaryTextController = TextEditingController();
+
+  //---------------NLP sentiment Analysis function----------------
+  String _mood = "";
+  double _negative = 0;
+  double _neutral = 0;
+  double _positive = 0;
+
+  LinearGradient _backgroundGradient =
+      BackgroundColors.getSentimentColor('Neutral');
+
+  void _updateSentimentState(
+      String sentiment, double positive, double neutral, double negative) {
+    setState(() {
+      _mood = sentiment;
+      _positive = positive;
+      _neutral = neutral;
+      _negative = negative;
+      _backgroundGradient = BackgroundColors.getSentimentColor(sentiment);
+    });
+  }
 
   @override
   void initState() {
@@ -95,7 +118,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => LibraryPage(),
+                              builder: (context) => const LibraryPage(),
                             ));
                       },
                     ),
@@ -250,6 +273,13 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                                         ),
                                       );
                                     }
+                                    //calling _analyzeSentiment from diarypage.dart
+                                    SentimentAnalyzer sentimentAnalyzer =
+                                        SentimentAnalyzer();
+
+                                    sentimentAnalyzer.analyzeSentiment(
+                                        _diaryTextController.toString(),
+                                        _updateSentimentState);
                                   }
                                   setState(() {
                                     isEditing = !isEditing;

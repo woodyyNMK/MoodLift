@@ -45,12 +45,16 @@ class _MyAppState extends State<MyApp> {
         future: getToken(),
         builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator(); // Show a loading spinner while waiting
+            return const CircularProgressIndicator(); // Show a loading spinner while waiting
           } else {
             if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-              return Scaffold(body : DiaryPage()); // If the token exists, redirect to DiaryPage
+              return const Scaffold(
+                  body:
+                      DiaryPage()); // If the token exists, redirect to DiaryPage
             } else {
-              return Scaffold(body : LogInPage()); // If the token doesn't exist, redirect to LogInPage
+              return const Scaffold(
+                  body:
+                      LogInPage()); // If the token doesn't exist, redirect to LogInPage
             }
           }
         },
