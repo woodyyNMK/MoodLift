@@ -44,8 +44,9 @@ class _CustomCalendarState extends State<CustomCalendar> {
             lastDay: DateTime.utc(2030, 3, 14),
             focusedDay: _focusedDay ?? DateTime.now(),
             calendarFormat: CalendarFormat.month,
-            selectedDayPredicate: (day) =>
-                isSameDay(_selectedDay ?? DateTime.now(), day),
+            selectedDayPredicate: (day) {
+              return _selectedDay != null && isSameDay(_selectedDay!, day);
+            },
             onDaySelected: (selectedDay, focusedDay) {
               setState(() {
                 _selectedDay = selectedDay;

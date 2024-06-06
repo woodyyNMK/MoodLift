@@ -21,7 +21,14 @@ class DiaryPageDetail extends StatefulWidget {
   final int positive;
   final int negative;
   final String id;
-  const DiaryPageDetail({required key,required this.id, required this.text, required this.date, required this.positive, required this.negative}) : super(key: key);
+  const DiaryPageDetail(
+      {required key,
+      required this.id,
+      required this.text,
+      required this.date,
+      required this.positive,
+      required this.negative})
+      : super(key: key);
 
   @override
   State<DiaryPageDetail> createState() => _DiaryPageDetailState();
@@ -39,7 +46,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
   encrypt.Encrypter? encrypter;
 
   late TextEditingController _diaryTextController;
-  
+
   @override
   void initState() {
     super.initState();
@@ -71,39 +78,66 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(0, 25, 0, 0),
               child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'Diary on ',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: GoogleFonts.suwannaphum().fontFamily,
-                      color: const Color.fromRGBO(22, 148, 182, 1),
-                      shadows: const [
-                        Shadow(
-                          color: Color.fromRGBO(0, 0, 0, 0.25),
-                          offset: Offset(0, 8),
-                          blurRadius: 8,
-                        )
-                      ],
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.chevron_left_outlined,
+                        color: Colors.black,
+                        size: 34,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                     ),
                   ),
-                  Text(
-                    formattedDate,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: GoogleFonts.suwannaphum().fontFamily,
-                      color: const Color.fromRGBO(22, 148, 182, 1),
-                      shadows: const [
-                        Shadow(
-                          color: Color.fromRGBO(0, 0, 0, 0.25),
-                          offset: Offset(0, 8),
-                          blurRadius: 8,
-                        )
-                      ],
+                  Flexible(
+                    child: Padding(
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(0, 0, 25, 0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Diary on ',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: GoogleFonts.suwannaphum().fontFamily,
+                              color: const Color.fromRGBO(22, 148, 182, 1),
+                              shadows: const [
+                                Shadow(
+                                  color: Color.fromRGBO(0, 0, 0, 0.25),
+                                  offset: Offset(0, 8),
+                                  blurRadius: 8,
+                                )
+                              ],
+                            ),
+                          ),
+                          Text(
+                            formattedDate,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: GoogleFonts.suwannaphum().fontFamily,
+                              color: const Color.fromRGBO(22, 148, 182, 1),
+                              shadows: const [
+                                Shadow(
+                                  color: Color.fromRGBO(0, 0, 0, 0.25),
+                                  offset: Offset(0, 8),
+                                  blurRadius: 8,
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -164,34 +198,50 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                                   borderRadius: BorderRadius.circular(36),
                                 ),
                                 child: FaIcon(
-                                  isEditing ? FontAwesomeIcons.check : FontAwesomeIcons.edit,
+                                  isEditing
+                                      ? FontAwesomeIcons.check
+                                      : FontAwesomeIcons.edit,
                                   color: const Color(0xFF000000),
                                   size: 25,
                                 ),
                                 onPressed: () async {
-                                  if(isEditing == true){
-                                    String? token = await StorageUtil.storage.read(key: 'idToken');
+                                  if (isEditing == true) {
+                                    String? token = await StorageUtil.storage
+                                        .read(key: 'idToken');
                                     final String param = id;
-                                    final encryptedDiary = encrypter?.encrypt(_diaryTextController.text, iv:iv);
+                                    final encryptedDiary = encrypter?.encrypt(
+                                        _diaryTextController.text,
+                                        iv: iv);
                                     final headers = {
-                                      'Content-Type': 'application/json; charset=UTF-8',
-                                      'Authorization': 'Bearer $token'};
+                                      'Content-Type':
+                                          'application/json; charset=UTF-8',
+                                      'Authorization': 'Bearer $token'
+                                    };
                                     var request = {
                                       "diary": encryptedDiary!.base64,
                                     };
-                                    final response = await http.put(Uri.parse("$url/updateDiary?param=$param"), headers: headers, body: json.encode(request));
-                                    var responsePayload = json.decode(response.body);
+                                    final response = await http.put(
+                                        Uri.parse(
+                                            "$url/updateDiary?param=$param"),
+                                        headers: headers,
+                                        body: json.encode(request));
+                                    var responsePayload =
+                                        json.decode(response.body);
                                     if (response.statusCode == 200) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         SnackBar(
-                                          content: Text(responsePayload['message']),
+                                          content:
+                                              Text(responsePayload['message']),
                                           duration: const Duration(seconds: 2),
                                         ),
                                       );
-                                    }else {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         SnackBar(
-                                          content: Text(responsePayload['message']),
+                                          content:
+                                              Text(responsePayload['message']),
                                           duration: const Duration(seconds: 2),
                                         ),
                                       );
