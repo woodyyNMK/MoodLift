@@ -70,9 +70,6 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
       _negative = negative;
       _backgroundGradient = BackgroundColors.getSentimentColor(sentiment);
     });
-    print(_positive);
-    print(_negative);
-    print(_neutral);
   }
 
   @override
