@@ -1,7 +1,4 @@
-// ignore_for_file: avoid_print
-
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mood_lift/authentication/logInPage.dart';
@@ -22,11 +19,14 @@ class MoodSummary extends StatefulWidget {
 }
 
 class _MoodSummaryState extends State<MoodSummary> {
-  bool mood = false;
-
+  bool moodPositive = true;
+  double percent = 0.0;
+  double positive = 0;
+  double negative = 0;
   final scafflodkey = GlobalKey<ScaffoldState>();
-  DateTime _selectedMonth = DateTime.now(); // New variable
+  DateTime _selectedMonth = DateTime.now();
   final String? url = dotenv.env['SERVER_URL'];
+
   void _logout() async {
     await StorageUtil.storage.delete(key: 'idToken');
     await StorageUtil.storage.delete(key: 'refreshToken');
@@ -46,11 +46,16 @@ class _MoodSummaryState extends State<MoodSummary> {
     );
   }
 
-  Future<void> _handleMonthChanged(DateTime newMonth) async {
+  @override
+  void initState() {
+    super.initState();
+    _handleMonthChanged(_selectedMonth);
+  }
+  
+  Future<void> _handleMonthChanged(DateTime newDate) async {
     setState(() {
-      _selectedMonth = newMonth;
+      _selectedMonth = newDate;
     });
-
     String? token = await StorageUtil.storage.read(key: 'idToken');
     final DateTime param = _selectedMonth;
     try {
@@ -64,16 +69,24 @@ class _MoodSummaryState extends State<MoodSummary> {
       );
       var responsePayload = json.decode(response.body);
       if (response.statusCode == 200) {
+        setState(() {
+          percent = responsePayload['averagePositive'] / 100;
+          positive = responsePayload['averagePositive'];
+          negative = responsePayload['averageNegative'];
+          moodPositive = responsePayload['averagePositive'] > 40;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(responsePayload['message']),
             duration: const Duration(seconds: 2),
           ),
         );
-        // print(responsePayload['averagePositive']);
-        // print(responsePayload['averageNegative']);
-        // print(responsePayload['averageNeutral']);
       } else {
+        setState(() {
+          percent = 0.0;
+          positive = 0.0;
+          negative = 0.0;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(responsePayload['message']),
@@ -90,7 +103,6 @@ class _MoodSummaryState extends State<MoodSummary> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scafflodkey,
-      //-----------------------Background Img  Container----------------------
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
@@ -106,9 +118,6 @@ class _MoodSummaryState extends State<MoodSummary> {
           children: [
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(0, 25, 0, 20),
-
-              //-----------------------Title----------------------
-
               child: Row(
                 children: [
                   Flexible(
@@ -149,9 +158,6 @@ class _MoodSummaryState extends State<MoodSummary> {
                 ],
               ),
             ),
-
-            //-----------------------Statistics Container----------------------
-
             Flexible(
               child: Column(
                 mainAxisSize: MainAxisSize.max,
@@ -183,11 +189,11 @@ class _MoodSummaryState extends State<MoodSummary> {
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              //-----------------------Choose Month Year Row ----------------------
                               MonthSelector(
-                                onMonthChanged: _handleMonthChanged,
+                                onMonthChanged: (DateTime newDate) {
+                                  _handleMonthChanged(newDate);
+                                },
                               ),
-                              //-----------------------Statistic Circle ----------------------
                               Flexible(
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
@@ -202,7 +208,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                                           color: Colors.black,
                                         ),
                                       ),
-                                      child: const WaveCircle(percentage: 0.45),
+                                      child: WaveCircle(percentage: percent),
                                     ),
                                   ],
                                 ),
@@ -215,10 +221,8 @@ class _MoodSummaryState extends State<MoodSummary> {
                                   Column(
                                     mainAxisSize: MainAxisSize.max,
                                     children: [
-                                      //---------------------- + / - Percentage----------------------
-
                                       Text(
-                                        '80 %',
+                                        '${positive.toStringAsFixed(0)} %',
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
@@ -243,7 +247,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                                     mainAxisSize: MainAxisSize.max,
                                     children: [
                                       Text(
-                                        '20 %',
+                                        '${negative.toStringAsFixed(0)} %',
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
@@ -262,7 +266,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                                           color: Colors.red,
                                         ),
                                       ),
-                                    ].toList(),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -275,13 +279,49 @@ class _MoodSummaryState extends State<MoodSummary> {
                 ],
               ),
             ),
-
             Flexible(
               child: Stack(
                 alignment: const AlignmentDirectional(0, 1),
                 children: [
-                  //-----------------------Cheering Words ----------------------
-                  mood
+                  negative == 0.0 && positive == 0.0
+                      ? Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              40, 30, 40, 0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                'No Record For This Month Yet',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily:
+                                      GoogleFonts.splineSans().fontFamily,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    0, 10, 0, 0),
+                                child: Text(
+                                  'Start by writing something for this month to track your mood.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontFamily:
+                                        GoogleFonts.splineSans().fontFamily,
+                                    color: Colors.black,
+                                    height: 1.9,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      :
+                  moodPositive
                       ? Padding(
                           padding: const EdgeInsetsDirectional.fromSTEB(
                               40, 30, 40, 0),
@@ -308,6 +348,8 @@ class _MoodSummaryState extends State<MoodSummary> {
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 12,
+
+
                                     fontFamily:
                                         GoogleFonts.splineSans().fontFamily,
                                     color: Colors.black,
@@ -315,7 +357,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                                   ),
                                 ),
                               ),
-                            ].toList(),
+                            ],
                           ),
                         )
                       : Padding(
@@ -333,7 +375,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                                   fontWeight: FontWeight.bold,
                                   fontFamily:
                                       GoogleFonts.splineSans().fontFamily,
-                                  color: Colors.black,
+                                  color: Colors.red,
                                 ),
                               ),
                               Padding(
@@ -351,7 +393,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                                   ),
                                 ),
                               ),
-                            ].toList(),
+                            ],
                           ),
                         ),
                   ClipRRect(
@@ -379,7 +421,6 @@ class _MoodSummaryState extends State<MoodSummary> {
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        //--------------Diary----------------
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -416,12 +457,9 @@ class _MoodSummaryState extends State<MoodSummary> {
                                   color: Colors.black,
                                 ),
                               ),
-                            ].toList(),
-                            //write a onclick navigate function to diary page
+                            ],
                           ),
                         ),
-
-                        //--------------Library----------------
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -444,7 +482,6 @@ class _MoodSummaryState extends State<MoodSummary> {
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              //Add image icon
                               const Icon(
                                 Icons.library_books_outlined,
                                 color: Colors.black,
@@ -459,11 +496,9 @@ class _MoodSummaryState extends State<MoodSummary> {
                                   color: Colors.black,
                                 ),
                               ),
-                            ].toList(),
+                            ],
                           ),
                         ),
-
-                        //--------------Statistics----------------
                         Column(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -482,10 +517,8 @@ class _MoodSummaryState extends State<MoodSummary> {
                                 color: const Color(0xFF1300EB),
                               ),
                             ),
-                          ].toList(),
+                          ],
                         ),
-
-                        //--------------Articles----------------
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -522,7 +555,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                                   color: Colors.black,
                                 ),
                               ),
-                            ].toList(),
+                            ],
                           ),
                         ),
                       ],

@@ -51,6 +51,22 @@ class _WaveCircleState extends State<WaveCircle> with TickerProviderStateMixin {
   }
 
   @override
+  void didUpdateWidget(WaveCircle oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.percentage != widget.percentage) {
+      _fillAnimation =
+          Tween<double>(begin: _fillAnimation.value, end: widget.percentage)
+              .animate(_fillController)
+            ..addListener(() {
+              setState(() {});
+            });
+      _fillController
+        ..reset()
+        ..forward();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: WaveCirclePainter(_fillAnimation.value, _waveAnimation.value),
