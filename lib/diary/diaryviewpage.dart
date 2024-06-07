@@ -8,7 +8,7 @@ import 'package:mood_lift/main.dart';
 import './diarypage.dart';
 import 'librarypage.dart';
 import './moodsummary.dart';
-import './articlepage.dart';
+import '../article/articlelist.dart';
 import './diaryviewpage.dart';
 import 'package:intl/intl.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -599,7 +599,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                               PageRouteBuilder(
                                 pageBuilder:
                                     (context, animation, secondaryAnimation) =>
-                                        const ArticlePage(),
+                                        const Article(),
                                 transitionsBuilder: (context, animation,
                                     secondaryAnimation, child) {
                                   return FadeTransition(
