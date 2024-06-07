@@ -1,13 +1,8 @@
 import 'dart:convert';
-import 'package:encrypt/encrypt.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mood_lift/diary/librarypage.dart';
-import 'package:mood_lift/main.dart';
-import "../diary/diarypage.dart";
-import 'package:encrypt/encrypt.dart' as encrypt;
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});

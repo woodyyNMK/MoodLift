@@ -16,7 +16,7 @@ class SoundManager {
       var audioPath = audioPaths[_random.nextInt(audioPaths.length)];
       await _audioPlayer.setReleaseMode(ReleaseMode.loop);
       await _audioPlayer.play(DeviceFileSource(audioPath));
-      await _audioPlayer.setVolume(0.5);
+      await _audioPlayer.setVolume(0.1);
     }
   }
 

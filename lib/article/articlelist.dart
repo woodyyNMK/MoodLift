@@ -4,9 +4,10 @@ import 'dart:ui';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mood_lift/main.dart';
 import './articledetail.dart';
+import '../diary/diarypage.dart';
+import '../diary/moodsummary.dart';
 
 class Article extends StatefulWidget {
   const Article({super.key});
@@ -31,8 +32,8 @@ class _ArticleState extends State<Article> {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token'
       };
-      final response = await http
-          .get(Uri.parse("$url/showArticles"), headers: headers);
+      final response =
+          await http.get(Uri.parse("$url/showArticles"), headers: headers);
       var responsePayload = json.decode(response.body);
 
       if (response.statusCode == 200) {
@@ -116,7 +117,12 @@ class _ArticleState extends State<Article> {
                         PageRouteBuilder(
                           pageBuilder:
                               (context, animation, secondaryAnimation) =>
-                                  const ArticleDetail(),
+                                  ArticleDetail(
+                            key: ValueKey(index),
+                            title: articles[index]['article_title'],
+                            text: articles[index]['text'],
+                            image: articles[index]['image'],
+                          ),
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {
                             return FadeTransition(
@@ -168,8 +174,8 @@ class _ArticleState extends State<Article> {
                                           style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
-                                            fontFamily:
-                                                GoogleFonts.poppins().fontFamily,
+                                            fontFamily: GoogleFonts.poppins()
+                                                .fontFamily,
                                             color: Colors.black,
                                           ),
                                         ),
@@ -180,7 +186,8 @@ class _ArticleState extends State<Article> {
                                 Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: Text(
-                                     articles[index]['createdAt'].substring(0, 10),
+                                    articles[index]['createdAt']
+                                        .substring(0, 10),
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
@@ -202,7 +209,6 @@ class _ArticleState extends State<Article> {
             ),
             // ),
             //
-            //--------------BottomNavBar----------------
             Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.end,
@@ -232,21 +238,21 @@ class _ArticleState extends State<Article> {
                       //--------------Diary----------------
                       GestureDetector(
                         onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   PageRouteBuilder(
-                          //     pageBuilder:
-                          //         (context, animation, secondaryAnimation) =>
-                          //             const DiaryPage(),
-                          //     transitionsBuilder: (context, animation,
-                          //         secondaryAnimation, child) {
-                          //       return FadeTransition(
-                          //         opacity: animation,
-                          //         child: child,
-                          //       );
-                          //     },
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const DiaryPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          );
                         },
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
@@ -297,21 +303,21 @@ class _ArticleState extends State<Article> {
                       //--------------Statistics----------------
                       GestureDetector(
                         onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   PageRouteBuilder(
-                          //     pageBuilder:
-                          //         (context, animation, secondaryAnimation) =>
-                          //             const MoodSummary(),
-                          //     transitionsBuilder: (context, animation,
-                          //         secondaryAnimation, child) {
-                          //       return FadeTransition(
-                          //         opacity: animation,
-                          //         child: child,
-                          //       );
-                          //     },
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const MoodSummary(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          );
                         },
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
@@ -338,21 +344,21 @@ class _ArticleState extends State<Article> {
                       //--------------Articles----------------
                       GestureDetector(
                         onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   PageRouteBuilder(
-                          //     pageBuilder:
-                          //         (context, animation, secondaryAnimation) =>
-                          //             const ArticlePage(),
-                          //     transitionsBuilder: (context, animation,
-                          //         secondaryAnimation, child) {
-                          //       return FadeTransition(
-                          //         opacity: animation,
-                          //         child: child,
-                          //       );
-                          //     },
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const Article(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          );
                         },
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
@@ -360,7 +366,7 @@ class _ArticleState extends State<Article> {
                           children: [
                             const Icon(
                               Icons.list,
-                              color: Color(0xFF1694B6),
+                              color: const Color(0xFF1300EB),
                               size: 28,
                             ),
                             Text(
@@ -369,7 +375,7 @@ class _ArticleState extends State<Article> {
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: GoogleFonts.poppins().fontFamily,
-                                color: const Color(0xFF1694B6),
+                                color: const Color(0xFF1300EB),
                               ),
                             ),
                           ].toList(),
