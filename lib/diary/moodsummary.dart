@@ -22,6 +22,8 @@ class MoodSummary extends StatefulWidget {
 }
 
 class _MoodSummaryState extends State<MoodSummary> {
+  bool mood = false;
+
   final scafflodkey = GlobalKey<ScaffoldState>();
   DateTime _selectedMonth = DateTime.now(); // New variable
   final String? url = dotenv.env['SERVER_URL'];
@@ -183,8 +185,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                             children: [
                               //-----------------------Choose Month Year Row ----------------------
                               MonthSelector(
-                                onMonthChanged:
-                                    _handleMonthChanged, // Pass the new function
+                                onMonthChanged: _handleMonthChanged,
                               ),
                               //-----------------------Statistic Circle ----------------------
                               Flexible(
@@ -280,41 +281,79 @@ class _MoodSummaryState extends State<MoodSummary> {
                 alignment: const AlignmentDirectional(0, 1),
                 children: [
                   //-----------------------Cheering Words ----------------------
-
-                  Padding(
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(40, 30, 40, 0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Wow, you\'ve truly shone this month!',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: GoogleFonts.splineSans().fontFamily,
-                            color: Colors.black,
+                  mood
+                      ? Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              40, 30, 40, 0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Wow, you\'ve truly shone this month!',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily:
+                                      GoogleFonts.splineSans().fontFamily,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    0, 10, 0, 0),
+                                child: Text(
+                                  ' Keep up this fantastic energy, because it’s making a difference in more ways than you might realize.\nHere’s to many more months filled with joy and positivity—keep shining bright!',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontFamily:
+                                        GoogleFonts.splineSans().fontFamily,
+                                    color: Colors.black,
+                                    height: 1.9,
+                                  ),
+                                ),
+                              ),
+                            ].toList(),
+                          ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              40, 30, 40, 0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                "It's seem like you've had a tough month",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily:
+                                      GoogleFonts.splineSans().fontFamily,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    0, 10, 0, 0),
+                                child: Text(
+                                  "Remember, you're not alone in this journey, and your feelings are valid. Support is always here when you need it. Take care of yourself, and allow yourself the time you need to heal and regain your strength. You are important, and your well-being matters deeply.",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontFamily:
+                                        GoogleFonts.splineSans().fontFamily,
+                                    color: Colors.black,
+                                    height: 1.9,
+                                  ),
+                                ),
+                              ),
+                            ].toList(),
                           ),
                         ),
-                        Padding(
-                          padding:
-                              const EdgeInsetsDirectional.fromSTEB(0, 10, 0, 0),
-                          child: Text(
-                            ' Keep up this fantastic energy, because it’s making a difference in more ways than you might realize.\nHere’s to many more months filled with joy and positivity—keep shining bright!',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontFamily: GoogleFonts.splineSans().fontFamily,
-                              color: Colors.black,
-                              height: 1.9,
-                            ),
-                          ),
-                        ),
-                      ].toList(),
-                    ),
-                  ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.asset(

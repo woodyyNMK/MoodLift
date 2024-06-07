@@ -140,7 +140,7 @@ class _LibraryPageState extends State<LibraryPage> {
                           decoration: const BoxDecoration(),
                           child: Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
-                                25, 0, 25, 0),
+                                25, 15, 25, 0),
                             child: ListView.builder(
                               padding: EdgeInsets.zero,
                               scrollDirection: Axis.horizontal,

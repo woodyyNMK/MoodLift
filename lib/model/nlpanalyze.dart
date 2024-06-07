@@ -6,7 +6,8 @@ import './musicmodel.dart';
 final String? nlptoken = dotenv.env['NLP_TOKEN'];
 
 class SentimentAnalyzer {
-  void analyzeSentiment(String text, Function updateStateCallback) async {
+  void analyzeSentiment(
+      String text, Function updateStateCallback, bool fromEditPage) async {
     try {
       final response = await http.post(
         Uri.parse(
@@ -42,7 +43,10 @@ class SentimentAnalyzer {
         }
         final String sentiment = labelMapping[data[0][0]['label']]!;
         updateStateCallback(sentiment, positive, neutral, negative);
-        SoundManager.playSound(sentiment);
+        if (fromEditPage) {
+        } else {
+          SoundManager.playSound(sentiment);
+        }
       } else {
         throw Exception('Failed to analyze sentiment');
       }

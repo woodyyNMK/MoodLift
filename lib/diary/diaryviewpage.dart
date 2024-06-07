@@ -55,7 +55,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
   late double _negative;
   late double _neutral;
   late double _positive;
-
+  bool fromEditPage = false;
   LinearGradient _backgroundGradient =
       BackgroundColors.getSentimentColor('Neutral');
 
@@ -213,7 +213,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                               fontFamily: GoogleFonts.splineSans().fontFamily,
                               color: Colors.black,
                             ),
-                            maxLines: 33,
+                            maxLines: 25,
                           ),
                         ),
                         Stack(
@@ -280,8 +280,10 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                                         SentimentAnalyzer();
 
                                     sentimentAnalyzer.analyzeSentiment(
-                                        _diaryTextController.toString(),
-                                        _updateSentimentState);
+                                      _diaryTextController.toString(),
+                                      _updateSentimentState,
+                                      fromEditPage = true,
+                                    );
                                   }
                                   setState(() {
                                     isEditing = !isEditing;
@@ -296,83 +298,98 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 isEditing
-                                    ? Align(
-                                        alignment:
-                                            const AlignmentDirectional(1, 1),
+                                    ? Flexible(
                                         child: Padding(
-                                          padding: const EdgeInsetsDirectional
-                                              .fromSTEB(0, 0, 15, 30),
-                                          child: TextButton(
-                                            onPressed: () async {
-                                              String? token = await StorageUtil
-                                                  .storage
-                                                  .read(key: 'idToken');
-                                              final String param = id;
-                                              final headers = {
-                                                'Content-Type':
-                                                    'application/json; charset=UTF-8',
-                                                'Authorization':
-                                                    'Bearer $token',
-                                              };
-                                              final response = await http.delete(
-                                                  Uri.parse(
-                                                      "$url/deleteDiary?param=$param"),
-                                                  headers: headers,);
-                                              var responsePayload =
-                                                  json.decode(response.body);
-                                              if (response.statusCode == 200) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                        responsePayload[
-                                                            'message']),
-                                                    duration: const Duration(
-                                                        seconds: 2),
-                                                  ),
-                                                );
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) => const LibraryPage(),
-                                                  ),
-                                                );
-                                              } else {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                        responsePayload[
-                                                            'message']),
-                                                    duration: const Duration(
-                                                        seconds: 2),
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                            style: TextButton.styleFrom(
-                                                backgroundColor:
-                                                    Colors.transparent,
-                                                shape: RoundedRectangleBorder(
-                                                  //border color
-                                                  side: const BorderSide(
-                                                      color: Colors.red,
-                                                      width: 1),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          5.0),
-                                                ),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 0, 0, 40),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              TextButton(
+                                                onPressed: () async {
+                                                  String? token =
+                                                      await StorageUtil.storage
+                                                          .read(key: 'idToken');
+                                                  final String param = id;
+                                                  final headers = {
+                                                    'Content-Type':
+                                                        'application/json; charset=UTF-8',
+                                                    'Authorization':
+                                                        'Bearer $token',
+                                                  };
+                                                  final response =
+                                                      await http.delete(
+                                                    Uri.parse(
+                                                        "$url/deleteDiary?param=$param"),
+                                                    headers: headers,
+                                                  );
+                                                  var responsePayload = json
+                                                      .decode(response.body);
+                                                  if (response.statusCode ==
+                                                      200) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                            responsePayload[
+                                                                'message']),
+                                                        duration:
+                                                            const Duration(
+                                                                seconds: 2),
+                                                      ),
+                                                    );
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const LibraryPage(),
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                        content: Text(
+                                                            responsePayload[
+                                                                'message']),
+                                                        duration:
+                                                            const Duration(
+                                                                seconds: 2),
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                                style: TextButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.transparent,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      //border color
+                                                      side: const BorderSide(
+                                                          color: Colors.red,
+                                                          width: 1),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5.0),
+                                                    ),
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
                                                         horizontal: 16,
                                                         vertical: 8)),
-                                            child: const Text(
-                                              'Delete',
-                                              style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
+                                                child: const Text(
+                                                  'Delete',
+                                                  style: TextStyle(
+                                                      color: Colors.red,
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       )
@@ -403,7 +420,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                                                 fontFamily:
                                                     GoogleFonts.splineSans()
                                                         .fontFamily,
-                                                color: Colors.black,
+                                                color: Colors.green,
                                               ),
                                             ),
                                             Text(
@@ -413,7 +430,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                                                 fontFamily:
                                                     GoogleFonts.splineSans()
                                                         .fontFamily,
-                                                color: Colors.black,
+                                                color: Colors.red,
                                               ),
                                             ),
                                           ],

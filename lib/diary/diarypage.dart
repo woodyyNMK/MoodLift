@@ -63,9 +63,6 @@ class _DiaryPageState extends State<DiaryPage> {
         setState(() {
           _diarycontroller.clear();
         });
-        setState(() {
-          _diarycontroller.clear();
-        });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -84,6 +81,7 @@ class _DiaryPageState extends State<DiaryPage> {
   double _negative = 0;
   double _neutral = 0;
   double _positive = 0;
+  bool fromEditPage = false;
 
   LinearGradient _backgroundGradient =
       BackgroundColors.getSentimentColor('Neutral');
@@ -196,7 +194,7 @@ class _DiaryPageState extends State<DiaryPage> {
                                   SentimentAnalyzer();
                               if (_diarycontroller.endsWith('.')) {
                                 sentimentAnalyzer.analyzeSentiment(
-                                    _diarycontroller, _updateSentimentState);
+                                    _diarycontroller, _updateSentimentState, fromEditPage = false);
                               }
                               if (_diarycontroller == "") {
                                 SoundManager.stopSound();
