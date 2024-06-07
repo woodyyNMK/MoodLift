@@ -154,7 +154,7 @@ class _LibraryPageState extends State<LibraryPage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => DiaryPageDetail(key: ValueKey(index), id: diaries[index]['_id'], text: diaries[index]['text'], date: date, positive: diaries[index]['positive'], negative: diaries[index]['negative'])
+                                        builder: (context) => DiaryPageDetail(key: ValueKey(index), id: diaries[index]['_id'], text: diaries[index]['text'], date: date, positive: diaries[index]['positive'], negative: diaries[index]['negative'], neutral: diaries[index]['neutral'], )
                                       ),
                                     );
                                   },

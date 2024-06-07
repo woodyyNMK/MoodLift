@@ -207,75 +207,57 @@ def createDiray():
         return json.dumps(response), 401
   
 @app.route("/updateDiary", methods=['PUT'])
-def updateDiary():
+def update_diary():
     auth_header = request.headers.get('Authorization')
-    if auth_header:
-        token = auth_header.split(" ")[1]
-    else:
-        token = ''
+    token = auth_header.split(" ")[1] if auth_header else ''
 
-    if token == '':
-        response = {
-            "message": "Unauthorized"
-        }
-        return json.dumps(response), 401
+    if not token:
+        return json.dumps({"message": "Unauthorized"}), 401
 
     try:
         decoded_token = Auth.verify_id_token(token)
         uid = decoded_token['uid']
-        # print(f"Decoded UID: {uid}")
 
-        id = request.args.get('param')
-        if not id:
-            response = {
-                "message": "Missing diary ID"
-            }
-            return json.dumps(response), 400
-        # print(f"Diary ID: {id}")
-        text = request.json.get('diary')
-        if not text:
-            response = {
-                "message": "Missing diary text"
-            }
-            return json.dumps(response), 400
+        diary_id = request.args.get('param')
+        diary_text = request.json.get('diary')
+        positive_score = request.json.get('positive')
+        negative_score = request.json.get('negative')
+        neutral_score = request.json.get('neutral')
 
-        try:
-            user_doc = db.users.find_one({"_id": uid})
-            # print(f"User document: {user_doc}")
+        missing_fields = [
+            field for field, value in [
+                ("diary ID", diary_id),
+                ("diary text", diary_text),
+                ("positive value", positive_score),
+                ("negative value", negative_score),
+                ("neutral value", neutral_score)
+            ] if not value
+        ]
 
-            if user_doc:
-                if 'diaries' in user_doc and id in user_doc['diaries']:
-                    db.diaries.update_one(
-                        {"_id": id},
-                        {"$set": {"text": text}}
-                    )
-                    return json.dumps({"message": "Diary updated successfully"}), 200
-                else:
-                    response = {
-                        "message": "Diary ID not found in user's diary array"
-                    }
-                    return json.dumps(response), 404
+        if missing_fields:
+            return json.dumps({"message": f"Missing {' and '.join(missing_fields)}"}), 400
+
+        user_doc = db.users.find_one({"_id": uid})
+
+        if user_doc and 'diaries' in user_doc and diary_id in user_doc['diaries']:
+            update_result = db.diaries.update_one(
+                {"_id": diary_id},
+                {"$set": {
+                    "text": diary_text,
+                    "positive": positive_score,
+                    "negative": negative_score,
+                    "neutral": neutral_score
+                }}
+            )
+            if update_result.modified_count == 1:
+                return json.dumps({"message": "Diary updated successfully"}), 200
             else:
-                response = {
-                    "message": "User not found"
-                }
-                return json.dumps(response), 404
-
-        except Exception as db_error:
-            # print(f"Database error: {db_error}")
-            response = {
-                "message": "Error accessing user document",
-                "error": str(db_error)
-            }
-            return json.dumps(response), 500
+                return json.dumps({"message": "Diary update failed"}), 500
+        else:
+            return json.dumps({"message": "Diary ID not found in user's diary array or User not found"}), 404
 
     except Exception as e:
-        # print(f"Error: {e}")
-        response = {
-            "message": "Error updating diary",
-            "error": str(e)
-        }
-        return json.dumps(response), 500
+        return json.dumps({"message": "Error updating diary", "error": str(e)}), 500
 
 
 @app.route("/deleteDiary", methods=['DELETE'])
