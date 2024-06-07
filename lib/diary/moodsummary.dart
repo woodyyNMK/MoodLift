@@ -19,8 +19,10 @@ class MoodSummary extends StatefulWidget {
 }
 
 class _MoodSummaryState extends State<MoodSummary> {
-  bool mood = false;
+  bool moodPositive = true;
   double percent = 0.0;
+  double positive = 0;
+  double negative = 0;
   final scafflodkey = GlobalKey<ScaffoldState>();
   DateTime _selectedMonth = DateTime.now();
   final String? url = dotenv.env['SERVER_URL'];
@@ -69,7 +71,9 @@ class _MoodSummaryState extends State<MoodSummary> {
       if (response.statusCode == 200) {
         setState(() {
           percent = responsePayload['averagePositive'] / 100;
-          mood = responsePayload['averagePositive'] > 50;
+          positive = responsePayload['averagePositive'];
+          negative = responsePayload['averageNegative'];
+          moodPositive = responsePayload['averagePositive'] > 40;
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -80,7 +84,8 @@ class _MoodSummaryState extends State<MoodSummary> {
       } else {
         setState(() {
           percent = 0.0;
-          mood = false;
+          positive = 0.0;
+          negative = 0.0;
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -217,7 +222,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                                     mainAxisSize: MainAxisSize.max,
                                     children: [
                                       Text(
-                                        '${(percent * 100).toStringAsFixed(1)} %',
+                                        '${positive.toStringAsFixed(0)} %',
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
@@ -242,7 +247,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                                     mainAxisSize: MainAxisSize.max,
                                     children: [
                                       Text(
-                                        '${((1 - percent) * 100).toStringAsFixed(1)} %',
+                                        '${negative.toStringAsFixed(0)} %',
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
@@ -278,7 +283,45 @@ class _MoodSummaryState extends State<MoodSummary> {
               child: Stack(
                 alignment: const AlignmentDirectional(0, 1),
                 children: [
-                  mood
+                  negative == 0.0 && positive == 0.0
+                      ? Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              40, 30, 40, 0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                'No Record For This Month Yet',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily:
+                                      GoogleFonts.splineSans().fontFamily,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    0, 10, 0, 0),
+                                child: Text(
+                                  'Start by writing something for this month to track your mood.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontFamily:
+                                        GoogleFonts.splineSans().fontFamily,
+                                    color: Colors.black,
+                                    height: 1.9,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      :
+                  moodPositive
                       ? Padding(
                           padding: const EdgeInsetsDirectional.fromSTEB(
                               40, 30, 40, 0),
@@ -332,7 +375,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                                   fontWeight: FontWeight.bold,
                                   fontFamily:
                                       GoogleFonts.splineSans().fontFamily,
-                                  color: Colors.black,
+                                  color: Colors.red,
                                 ),
                               ),
                               Padding(
