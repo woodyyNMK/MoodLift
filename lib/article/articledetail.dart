@@ -140,7 +140,7 @@ class _ArticleDetailState extends State<ArticleDetail> {
                             child: Text(widget.text,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: FontWeight.normal,
+                                  fontWeight: FontWeight.bold,
                                   fontFamily: GoogleFonts.poppins().fontFamily,
                                   color: Colors.black,
                                 )),
