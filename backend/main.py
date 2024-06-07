@@ -70,14 +70,14 @@ def login():
         
         # Decrypt and unpad the password
         decryptedpassword = unpad(cipher.decrypt(encrypted_password), AES.block_size).decode('utf-8')
-        print(f'Decrypted Password: {decryptedpassword}')
+        # print(f'Decrypted Password: {decryptedpassword}')
         
         try:
             user = auth.sign_in_with_email_and_password(email, decryptedpassword)
             info = auth.get_account_info(user['idToken'])
-            print(info)
+            # print(info)
             user_doc = db.users.find_one({"_id": user['idToken']})
-            print(user_doc)
+            # print(user_doc)
             if user_doc:
                 db.users.update_one({"_id": user['idToken']}, {"$set": {"password": info['users'][0]['passwordHash']}})
 
@@ -97,10 +97,10 @@ def login():
 @app.route("/resetPassword", methods=['POST'])
 def resetPassword():
     email = request.json['email']
-    print(email)
+    # print(email)
     try:
         user = Auth.get_user_by_email(email)
-        print(user)
+        # print(user)
         auth.send_password_reset_email(email)
         response = {
             "message": "Password reset email sent"
@@ -223,7 +223,7 @@ def updateDiary():
     try:
         decoded_token = Auth.verify_id_token(token)
         uid = decoded_token['uid']
-        print(f"Decoded UID: {uid}")
+        # print(f"Decoded UID: {uid}")
 
         id = request.args.get('param')
         if not id:
@@ -231,7 +231,7 @@ def updateDiary():
                 "message": "Missing diary ID"
             }
             return json.dumps(response), 400
-        print(f"Diary ID: {id}")
+        # print(f"Diary ID: {id}")
         text = request.json.get('diary')
         if not text:
             response = {
@@ -241,7 +241,7 @@ def updateDiary():
 
         try:
             user_doc = db.users.find_one({"_id": uid})
-            print(f"User document: {user_doc}")
+            # print(f"User document: {user_doc}")
 
             if user_doc:
                 if 'diaries' in user_doc and id in user_doc['diaries']:
@@ -276,7 +276,68 @@ def updateDiary():
             "error": str(e)
         }
         return json.dumps(response), 500
+
+
+@app.route("/deleteDiary", methods=['DELETE'])
+def deleteDiary():
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        token = auth_header.split(" ")[1]
+    else:
+        token = ''
+
+    if token == '':
+        response = {
+            "message": "Unauthorized"
+        }
+        return json.dumps(response), 401
+
+    try:
+        decoded_token = Auth.verify_id_token(token)
+        uid = decoded_token['uid']
+        # print(f"Decoded UID: {uid}")
+
+        id = request.args.get('param')
+        if not id:
+            response = {
+                "message": "Missing diary ID"
+            }
+            return json.dumps(response), 400
+
+        try:
+            user_doc = db.users.find_one({"_id": uid})
+            # print(f"User document: {user_doc}")
+
+            if user_doc:
+                if 'diaries' in user_doc and id in user_doc['diaries']:
+                    db.diaries.delete_one(
+                        {"_id": id},
+                    )
+                    return json.dumps({"message": "Diary deleted successfully"}), 200
+                else:
+                    response = {
+                        "message": "Diary ID not found in user's diary array"
+                    }
+                    return json.dumps(response), 404
+
+        except Exception as db_error:
+            # print(f"Database error: {db_error}")
+            response = {
+                "message": "Error accessing user document",
+                "error": str(db_error)
+            }
+            return json.dumps(response), 500
+
+    except Exception as e:
+        # print(f"Error: {e}")
+        response = {
+            "message": "Error deleting diary",
+            "error": str(e)
+        }
+        return json.dumps(response), 500
   
+
+
 @app.route("/showDiaries", methods=['GET'])
 def showDiaries():
     
@@ -291,9 +352,9 @@ def showDiaries():
         try:
             # Get the date parameter from the query string and convert it to a datetime object
             selectedDateTime = request.args.get('param')
-            print(selectedDateTime)
+            # print(selectedDateTime)
             date = datetime.strptime(selectedDateTime, "%Y-%m-%d %H:%M:%S.%fZ")
-            print(date)
+            # print(date)
             # Fetch the user document from the users collection
             user = db.users.find_one({"_id": uid})
             if user and 'diaries' in user:

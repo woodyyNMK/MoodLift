@@ -51,7 +51,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
   var _diaryTextController = TextEditingController();
 
   //---------------NLP sentiment Analysis function----------------
-  late String _mood ;
+  late String _mood;
   late double _negative;
   late double _neutral;
   late double _positive;
@@ -303,8 +303,52 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                                           padding: const EdgeInsetsDirectional
                                               .fromSTEB(0, 0, 15, 30),
                                           child: TextButton(
-                                            onPressed: () {
-                                              
+                                            onPressed: () async {
+                                              String? token = await StorageUtil
+                                                  .storage
+                                                  .read(key: 'idToken');
+                                              final String param = id;
+                                              final headers = {
+                                                'Content-Type':
+                                                    'application/json; charset=UTF-8',
+                                                'Authorization':
+                                                    'Bearer $token',
+                                              };
+                                              final response = await http.delete(
+                                                  Uri.parse(
+                                                      "$url/deleteDiary?param=$param"),
+                                                  headers: headers,);
+                                              var responsePayload =
+                                                  json.decode(response.body);
+                                              if (response.statusCode == 200) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                        responsePayload[
+                                                            'message']),
+                                                    duration: const Duration(
+                                                        seconds: 2),
+                                                  ),
+                                                );
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => const LibraryPage(),
+                                                  ),
+                                                );
+                                              } else {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                        responsePayload[
+                                                            'message']),
+                                                    duration: const Duration(
+                                                        seconds: 2),
+                                                  ),
+                                                );
+                                              }
                                             },
                                             style: TextButton.styleFrom(
                                                 backgroundColor:
