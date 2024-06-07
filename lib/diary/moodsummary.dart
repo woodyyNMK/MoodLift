@@ -7,7 +7,7 @@ import 'package:mood_lift/model/liquidmodel.dart';
 import "../model/monthselector.dart";
 import './diarypage.dart';
 import 'librarypage.dart';
-import './articlepage.dart';
+import '../article/articlelist.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -526,7 +526,7 @@ class _MoodSummaryState extends State<MoodSummary> {
                               PageRouteBuilder(
                                 pageBuilder:
                                     (context, animation, secondaryAnimation) =>
-                                        const ArticlePage(),
+                                        const Article(),
                                 transitionsBuilder: (context, animation,
                                     secondaryAnimation, child) {
                                   return FadeTransition(

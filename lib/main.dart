@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mood_lift/diary/diarypage.dart';
 import './authentication/logInPage.dart';
-import './authentication/forgotPassword.dart';
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:auth_state_manager/auth_state_manager.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
