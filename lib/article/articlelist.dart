@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mood_lift/main.dart';
 import './articledetail.dart';
 
 class Article extends StatefulWidget {
@@ -15,7 +16,49 @@ class Article extends StatefulWidget {
 }
 
 class _ArticleState extends State<Article> {
-  List<Map<String, dynamic>> diaries = [];
+  List<Map<String, dynamic>> articles = [];
+  final String? url = dotenv.env['SERVER_URL'];
+  @override
+  void initState() {
+    super.initState();
+    _showArticles();
+  }
+
+  void _showArticles() async {
+    String? token = await StorageUtil.storage.read(key: 'idToken');
+    try {
+      final headers = {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'
+      };
+      final response = await http
+          .get(Uri.parse("$url/showArticles"), headers: headers);
+      var responsePayload = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        setState(() {
+          articles = (responsePayload['articles'] as List)
+              .map((item) => item as Map<String, dynamic>)
+              .toList();
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responsePayload['message']),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responsePayload['message']),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,113 +105,99 @@ class _ArticleState extends State<Article> {
 
             //--------------ArticleList----------------
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-                      child: ListView.builder(
-                          padding: EdgeInsets.zero,
-                          scrollDirection: Axis.vertical,
-                          itemCount: 5,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  PageRouteBuilder(
-                                    pageBuilder: (context, animation,
-                                            secondaryAnimation) =>
-                                        const ArticleDetail(),
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      return FadeTransition(
-                                        opacity: animation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.6),
-                                  borderRadius: BorderRadius.circular(25),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      blurRadius: 4,
-                                      color: Color(0x33000000),
-                                      offset: Offset(0, 0.0),
-                                      spreadRadius: 4,
-                                    )
-                                  ],
-                                ),
-                                child: Row(children: [
-                                  // Pic
-                                  Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(22),
-                                      child: Image.asset(
-                                          'assets/images/dog.png',
-                                          width: 125,
-                                          height: 125,
-                                          fit: BoxFit.cover),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(10.0),
-                                          child: Row(
-                                            children: [
-                                              Flexible(
-                                                child: Text(
-                                                  'Health and How to Heal to feel better? A deep discussion',
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontFamily:
-                                                        GoogleFonts.poppins()
-                                                            .fontFamily,
-                                                    color: Colors.black,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(10.0),
-                                          child: Text(
-                                            '27 April 2024',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.normal,
-                                              fontFamily: GoogleFonts.poppins()
-                                                  .fontFamily,
-                                              color: const Color(0xFFB89494),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ]),
-                              ),
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: articles.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  const ArticleDetail(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
                             );
-                          }),
+                          },
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.6),
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: const [
+                            BoxShadow(
+                              blurRadius: 4,
+                              color: Color(0x33000000),
+                              offset: Offset(0, 0.0),
+                              spreadRadius: 4,
+                            )
+                          ],
+                        ),
+                        child: Row(children: [
+                          // Pic
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(22),
+                              child: Image.network(articles[index]['image'],
+                                  width: 125, height: 125, fit: BoxFit.cover),
+                            ),
+                          ),
+                          Flexible(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Row(
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          articles[index]['article_title'],
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily:
+                                                GoogleFonts.poppins().fontFamily,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Text(
+                                     articles[index]['createdAt'].substring(0, 10),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.normal,
+                                      fontFamily:
+                                          GoogleFonts.poppins().fontFamily,
+                                      color: const Color(0xFFB89494),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ]),
+                      ),
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
             // ),

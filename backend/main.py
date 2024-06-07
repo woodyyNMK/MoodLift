@@ -389,6 +389,48 @@ def showDiaries():
             "message": "Unauthorized"
         }
         return json.dumps(response), 401 
+    
+
+@app.route("/showArticles", methods=['GET'])
+def showArticles():
+    
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        token = auth_header.split(" ")[1]
+    else:
+        token = ''
+    if token != '':
+        decoded_token = Auth.verify_id_token(token)
+        uid = decoded_token['uid']
+        try:
+            # Fetch the user document from the users collection
+            user = db.users.find_one({"_id": uid})
+            if user:
+                # Fetch the diaries for the given date
+                articles = db.articles.find()
+                # Convert the diaries to a list and return them in the response
+                article_list = list(articles)
+                # print(article_list)
+                response = {
+                    "articles": article_list,
+                    "message": "Articles fetched successfully",
+                }
+                return json.dumps(response, default=json_util.default), 200
+            else:
+                response = {
+                    "message": "User not found"
+                }
+                return json.dumps(response), 401
+        except:
+            response = {
+                "message": "Error fetching Articles"
+            }
+            return json.dumps(response), 401
+    else:
+        response = {
+            "message": "Unauthorized"
+        }
+        return json.dumps(response), 401 
 
 @app.route("/showSummary", methods=['GET'])
 def showSummary():
@@ -421,6 +463,7 @@ def showSummary():
                 # Fetch the diaries for the given date
                 pipeline = [
                     {"$match": {
+                        "_id": {"$in": user['diaries']},
                         "createdAt": {
                             "$gte": start_date,
                             "$lt": end_date
