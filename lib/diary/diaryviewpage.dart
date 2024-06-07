@@ -51,10 +51,10 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
   var _diaryTextController = TextEditingController();
 
   //---------------NLP sentiment Analysis function----------------
-  String _mood = "";
-  double _negative = 0;
-  double _neutral = 0;
-  double _positive = 0;
+  late String _mood ;
+  late double _negative;
+  late double _neutral;
+  late double _positive;
 
   LinearGradient _backgroundGradient =
       BackgroundColors.getSentimentColor('Neutral');
@@ -79,6 +79,8 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
     displayText = encrypter?.decrypt(encryptedText, iv: iv);
     id = widget.id;
     _diaryTextController = TextEditingController(text: displayText);
+    _positive = widget.positive.toDouble();
+    _negative = widget.negative.toDouble();
   }
 
   @override
@@ -293,74 +295,86 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      15, 0, 0, 25),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Mood Percentage ',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontFamily: GoogleFonts.splineSans()
-                                              .fontFamily,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      Text(
-                                        'Positive    :',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontFamily: GoogleFonts.splineSans()
-                                              .fontFamily,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      Text(
-                                        'Negative  :',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontFamily: GoogleFonts.splineSans()
-                                              .fontFamily,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Align(
-                                  alignment: const AlignmentDirectional(1, 1),
-                                  child: Padding(
-                                    padding:
-                                        const EdgeInsetsDirectional.fromSTEB(
-                                            0, 0, 15, 30),
-                                    child: TextButton(
-                                      onPressed: () {},
-                                      style: TextButton.styleFrom(
-                                          backgroundColor: Colors.transparent,
-                                          shape: RoundedRectangleBorder(
-                                            //border color
-                                            side: const BorderSide(
-                                                color: Colors.red, width: 1),
-                                            borderRadius:
-                                                BorderRadius.circular(5.0),
+                                isEditing
+                                    ? Align(
+                                        alignment:
+                                            const AlignmentDirectional(1, 1),
+                                        child: Padding(
+                                          padding: const EdgeInsetsDirectional
+                                              .fromSTEB(0, 0, 15, 30),
+                                          child: TextButton(
+                                            onPressed: () {
+                                              
+                                            },
+                                            style: TextButton.styleFrom(
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                shape: RoundedRectangleBorder(
+                                                  //border color
+                                                  side: const BorderSide(
+                                                      color: Colors.red,
+                                                      width: 1),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          5.0),
+                                                ),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 16,
+                                                        vertical: 8)),
+                                            child: const Text(
+                                              'Delete',
+                                              style: TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
                                           ),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 8)),
-                                      child: const Text(
-                                        'Delete',
-                                        style: TextStyle(
-                                            color: Colors.red,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                        ),
+                                      )
+                                    : Padding(
+                                        padding: const EdgeInsetsDirectional
+                                            .fromSTEB(15, 0, 0, 25),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Mood Percentage ',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontFamily:
+                                                    GoogleFonts.splineSans()
+                                                        .fontFamily,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            Text(
+                                              'Positive    : $_positive%',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontFamily:
+                                                    GoogleFonts.splineSans()
+                                                        .fontFamily,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            Text(
+                                              'Negative  : $_negative%',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontFamily:
+                                                    GoogleFonts.splineSans()
+                                                        .fontFamily,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
                               ],
                             ),
                           ],
