@@ -6,7 +6,7 @@ import './musicmodel.dart';
 final String? nlptoken = dotenv.env['NLP_TOKEN'];
 
 class SentimentAnalyzer {
-  void analyzeSentiment(
+  Future analyzeSentiment(
       String text, Function updateStateCallback, bool fromEditPage) async {
     try {
       final response = await http.post(

@@ -70,6 +70,9 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
       _negative = negative;
       _backgroundGradient = BackgroundColors.getSentimentColor(sentiment);
     });
+    print(_positive);
+    print(_negative);
+    print(_neutral);
   }
 
   @override
@@ -242,7 +245,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                                     SentimentAnalyzer sentimentAnalyzer =
                                         SentimentAnalyzer();
 
-                                    sentimentAnalyzer.analyzeSentiment(
+                                    await sentimentAnalyzer.analyzeSentiment(
                                       _diaryTextController.toString(),
                                       _updateSentimentState,
                                       fromEditPage = true,
