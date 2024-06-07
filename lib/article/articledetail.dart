@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:ui';
+import '../diary/diarypage.dart';
+import 'articlelist.dart';
+import '../diary/moodsummary.dart';
 
 class ArticleDetail extends StatefulWidget {
-  const ArticleDetail({super.key});
+  final String text;
+  final String title;
+  final String image;
+  const ArticleDetail(
+      {required key,
+      required this.text,
+      required this.image,
+      required this.title})
+      : super(key: key);
 
   @override
   State<ArticleDetail> createState() => _ArticleDetailState();
@@ -14,7 +25,6 @@ class _ArticleDetailState extends State<ArticleDetail> {
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
-    var orientation = MediaQuery.of(context).orientation;
 
     return Scaffold(
       body: Container(
@@ -82,7 +92,6 @@ class _ArticleDetailState extends State<ArticleDetail> {
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -100,9 +109,7 @@ class _ArticleDetailState extends State<ArticleDetail> {
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   fit: BoxFit.cover,
-                                  image: Image.asset(
-                                    'assets/images/background.png',
-                                  ).image,
+                                  image: Image.network(widget.image).image,
                                 ),
                                 borderRadius: BorderRadius.circular(25),
                               ),
@@ -111,73 +118,41 @@ class _ArticleDetailState extends State<ArticleDetail> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(20.0),
-                      child: Expanded(
-                        child: Text(
-                            '$width Health and How to Heal to feel better? A deep discussion',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: GoogleFonts.poppins().fontFamily,
-                              color: Colors.black,
-                            )),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Text(widget.title,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: GoogleFonts.poppins().fontFamily,
+                                  color: Colors.black,
+                                )),
+                          ),
+                        ],
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(20.0),
-                      child: Expanded(
-                        child: Text(
-                            "Scriptures on mental health are there to give us comfort and remind us that God is with us, even in those struggles. When our mind starts racing, our stress levels rise or we become anxious, let us remember that God told us we do not have to be afraid.Scriptures on mental health are there to give us comfort and remind us that God is with us, even in those struggles. When our mind starts racing, our stress levels rise or we become anxious",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.normal,
-                              fontFamily: GoogleFonts.poppins().fontFamily,
-                              color: Colors.black,
-                            )),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Expanded(
-                        child: Text(
-                            "Scriptures on mental health are there to give us comfort and remind us that God is with us, even in those struggles. When our mind starts racing, our stress levels rise or we become anxious, let us remember that God told us we do not have to be afraid.Scriptures on mental health are there to give us comfort and remind us that God is with us, even in those struggles. When our mind starts racing, our stress levels rise or we become anxious",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.normal,
-                              fontFamily: GoogleFonts.poppins().fontFamily,
-                              color: Colors.black,
-                            )),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Expanded(
-                        child: Text(
-                            "Scriptures on mental health are there to give us comfort and remind us that God is with us, even in those struggles. When our mind starts racing, our stress levels rise or we become anxious, let us remember that God told us we do not have to be afraid.Scriptures on mental health are there to give us comfort and remind us that God is with us, even in those struggles. When our mind starts racing, our stress levels rise or we become anxious",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.normal,
-                              fontFamily: GoogleFonts.poppins().fontFamily,
-                              color: Colors.black,
-                            )),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Expanded(
-                        child: Text(
-                            "Scriptures on mental health are there to give us comfort and remind us that God is with us, even in those struggles. When our mind starts racing, our stress levels rise or we become anxious, let us remember that God told us we do not have to be afraid.Scriptures on mental health are there to give us comfort and remind us that God is with us, even in those struggles. When our mind starts racing, our stress levels rise or we become anxious",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.normal,
-                              fontFamily: GoogleFonts.poppins().fontFamily,
-                              color: Colors.black,
-                            )),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Text(widget.text,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.normal,
+                                  fontFamily: GoogleFonts.poppins().fontFamily,
+                                  color: Colors.black,
+                                )),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
             ),
+
             //
             //--------------BottomNavBar----------------
             Column(
@@ -209,21 +184,21 @@ class _ArticleDetailState extends State<ArticleDetail> {
                       //--------------Diary----------------
                       GestureDetector(
                         onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   PageRouteBuilder(
-                          //     pageBuilder:
-                          //         (context, animation, secondaryAnimation) =>
-                          //             const DiaryPage(),
-                          //     transitionsBuilder: (context, animation,
-                          //         secondaryAnimation, child) {
-                          //       return FadeTransition(
-                          //         opacity: animation,
-                          //         child: child,
-                          //       );
-                          //     },
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const DiaryPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          );
                         },
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
@@ -274,21 +249,21 @@ class _ArticleDetailState extends State<ArticleDetail> {
                       //--------------Statistics----------------
                       GestureDetector(
                         onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   PageRouteBuilder(
-                          //     pageBuilder:
-                          //         (context, animation, secondaryAnimation) =>
-                          //             const MoodSummary(),
-                          //     transitionsBuilder: (context, animation,
-                          //         secondaryAnimation, child) {
-                          //       return FadeTransition(
-                          //         opacity: animation,
-                          //         child: child,
-                          //       );
-                          //     },
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const MoodSummary(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          );
                         },
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
@@ -315,21 +290,21 @@ class _ArticleDetailState extends State<ArticleDetail> {
                       //--------------Articles----------------
                       GestureDetector(
                         onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   PageRouteBuilder(
-                          //     pageBuilder:
-                          //         (context, animation, secondaryAnimation) =>
-                          //             const ArticlePage(),
-                          //     transitionsBuilder: (context, animation,
-                          //         secondaryAnimation, child) {
-                          //       return FadeTransition(
-                          //         opacity: animation,
-                          //         child: child,
-                          //       );
-                          //     },
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const Article(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          );
                         },
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
@@ -337,7 +312,7 @@ class _ArticleDetailState extends State<ArticleDetail> {
                           children: [
                             const Icon(
                               Icons.list,
-                              color: Color(0xFF1694B6),
+                              color: const Color(0xFF1300EB),
                               size: 28,
                             ),
                             Text(
@@ -346,7 +321,7 @@ class _ArticleDetailState extends State<ArticleDetail> {
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: GoogleFonts.poppins().fontFamily,
-                                color: const Color(0xFF1694B6),
+                                color: const Color(0xFF1300EB),
                               ),
                             ),
                           ].toList(),

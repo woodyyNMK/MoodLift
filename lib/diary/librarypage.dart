@@ -5,7 +5,7 @@ import 'package:mood_lift/diary/diaryviewpage.dart';
 import "../model/customcalendar.dart";
 import './diarypage.dart';
 import './moodsummary.dart';
-import './articlepage.dart';
+import '../article/articlelist.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:mood_lift/main.dart';
@@ -154,7 +154,7 @@ class _LibraryPageState extends State<LibraryPage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => DiaryPageDetail(key: ValueKey(index), id: diaries[index]['_id'], text: diaries[index]['text'], date: date, positive: diaries[index]['positive'], negative: diaries[index]['negative'])
+                                        builder: (context) => DiaryPageDetail(key: ValueKey(index), id: diaries[index]['_id'], text: diaries[index]['text'], date: date, positive: diaries[index]['positive'], negative: diaries[index]['negative'], neutral: diaries[index]['neutral'], )
                                       ),
                                     );
                                   },
@@ -330,7 +330,7 @@ class _LibraryPageState extends State<LibraryPage> {
                             PageRouteBuilder(
                               pageBuilder:
                                   (context, animation, secondaryAnimation) =>
-                                      const ArticlePage(),
+                                      const Article(),
                               transitionsBuilder: (context, animation,
                                   secondaryAnimation, child) {
                                 return FadeTransition(

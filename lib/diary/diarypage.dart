@@ -9,7 +9,7 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:mood_lift/main.dart';
 import 'librarypage.dart';
 import './moodsummary.dart';
-import './articlepage.dart';
+import '../article/articlelist.dart';
 import '../model/colormodel.dart';
 import '../model/musicmodel.dart';
 import '../model/nlpanalyze.dart';
@@ -420,7 +420,7 @@ class _DiaryPageState extends State<DiaryPage> {
                               PageRouteBuilder(
                                 pageBuilder:
                                     (context, animation, secondaryAnimation) =>
-                                        const ArticlePage(),
+                                        const Article(),
                                 transitionsBuilder: (context, animation,
                                     secondaryAnimation, child) {
                                   return FadeTransition(

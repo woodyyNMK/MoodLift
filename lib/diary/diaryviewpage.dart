@@ -8,7 +8,7 @@ import 'package:mood_lift/main.dart';
 import './diarypage.dart';
 import 'librarypage.dart';
 import './moodsummary.dart';
-import './articlepage.dart';
+import '../article/articlelist.dart';
 import './diaryviewpage.dart';
 import 'package:intl/intl.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -23,6 +23,7 @@ class DiaryPageDetail extends StatefulWidget {
   final DateTime date;
   final int positive;
   final int negative;
+  final int neutral;
   final String id;
   const DiaryPageDetail(
       {required key,
@@ -30,7 +31,8 @@ class DiaryPageDetail extends StatefulWidget {
       required this.text,
       required this.date,
       required this.positive,
-      required this.negative})
+      required this.negative,
+      required this.neutral})
       : super(key: key);
 
   @override
@@ -81,6 +83,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
     _diaryTextController = TextEditingController(text: displayText);
     _positive = widget.positive.toDouble();
     _negative = widget.negative.toDouble();
+    _neutral = widget.neutral.toDouble();
   }
 
   @override
@@ -235,6 +238,15 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                                 ),
                                 onPressed: () async {
                                   if (isEditing == true) {
+                                    //calling _analyzeSentiment from diarypage.dart
+                                    SentimentAnalyzer sentimentAnalyzer =
+                                        SentimentAnalyzer();
+
+                                    await sentimentAnalyzer.analyzeSentiment(
+                                      _diaryTextController.toString(),
+                                      _updateSentimentState,
+                                      fromEditPage = true,
+                                    );
                                     String? token = await StorageUtil.storage
                                         .read(key: 'idToken');
                                     final String param = id;
@@ -248,6 +260,9 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                                     };
                                     var request = {
                                       "diary": encryptedDiary!.base64,
+                                      "positive": _positive,
+                                      "negative": _negative,
+                                      "neutral": _neutral,
                                     };
                                     final response = await http.put(
                                         Uri.parse(
@@ -275,15 +290,6 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                                         ),
                                       );
                                     }
-                                    //calling _analyzeSentiment from diarypage.dart
-                                    SentimentAnalyzer sentimentAnalyzer =
-                                        SentimentAnalyzer();
-
-                                    sentimentAnalyzer.analyzeSentiment(
-                                      _diaryTextController.toString(),
-                                      _updateSentimentState,
-                                      fromEditPage = true,
-                                    );
                                   }
                                   setState(() {
                                     isEditing = !isEditing;
@@ -599,7 +605,7 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
                               PageRouteBuilder(
                                 pageBuilder:
                                     (context, animation, secondaryAnimation) =>
-                                        const ArticlePage(),
+                                        const Article(),
                                 transitionsBuilder: (context, animation,
                                     secondaryAnimation, child) {
                                   return FadeTransition(
