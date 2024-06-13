@@ -4,6 +4,7 @@ import 'dart:ui';
 import '../diary/diarypage.dart';
 import 'articlelist.dart';
 import '../diary/moodsummary.dart';
+import '../diary/librarypage.dart';
 
 class ArticleDetail extends StatefulWidget {
   final String text;
@@ -224,26 +225,45 @@ class _ArticleDetailState extends State<ArticleDetail> {
                       ),
 
                       //--------------Library----------------
-                      Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          //Add image icon
-                          const Icon(
-                            Icons.library_books_outlined,
-                            color: Colors.black,
-                            size: 28,
-                          ),
-                          Text(
-                            'Library',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: GoogleFonts.poppins().fontFamily,
-                              color: Colors.black,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const LibraryPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
                             ),
-                          ),
-                        ].toList(),
+                          );
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            //Add image icon
+                            const Icon(
+                              Icons.library_books_outlined,
+                              color: Colors.black,
+                              size: 28,
+                            ),
+                            Text(
+                              'Library',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: GoogleFonts.poppins().fontFamily,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ].toList(),
+                        ),
                       ),
 
                       //--------------Statistics----------------
@@ -312,7 +332,7 @@ class _ArticleDetailState extends State<ArticleDetail> {
                           children: [
                             const Icon(
                               Icons.list,
-                              color: const Color(0xFF1300EB),
+                              color:  Color(0xFF1300EB),
                               size: 28,
                             ),
                             Text(
