@@ -69,6 +69,7 @@ class _LogInPageState extends State<LogInPage> {
         await StorageUtil.storage.write(key: 'idToken', value: responsePayload['idToken']);
         await StorageUtil.storage.write(key: 'refreshToken', value: responsePayload['refreshToken']);
         await StorageUtil.storage.write(key: 'expiresIn', value: responsePayload['expiresIn']);
+        await StorageUtil.storage.write(key: 'user', value: responsePayload['displayName']);
         String? token = await StorageUtil.storage.read(key: 'idToken');
         if (token != null) {
           //if successful, navigate to the diarypage.dart

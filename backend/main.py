@@ -74,18 +74,20 @@ def login():
         
         try:
             user = auth.sign_in_with_email_and_password(email, decryptedpassword)
+            # print(user)
             info = auth.get_account_info(user['idToken'])
             # print(info)
-            user_doc = db.users.find_one({"_id": user['idToken']})
-            # print(user_doc)
+            user_doc = db.users.find_one({"_id": user['localId']})
+            print(user_doc)
             if user_doc:
-                db.users.update_one({"_id": user['idToken']}, {"$set": {"password": info['users'][0]['passwordHash']}})
+                db.users.update_one({"_id": user['localId']}, {"$set": {"password": info['users'][0]['passwordHash']}})
 
             response = {
                 "idToken": user['idToken'],
                 "refreshToken": user['refreshToken'],
                 "expiresIn": user['expiresIn'],
-                "message": "Successfully logged in"
+                "message": "Successfully logged in",
+                "displayName": user_doc['displayName']
             }
             return json.dumps(response), 200
         except:

@@ -23,11 +23,27 @@ class DiaryPage extends StatefulWidget {
 
 class _DiaryPageState extends State<DiaryPage> {
   final scafflodkey = GlobalKey<ScaffoldState>();
-
+  String displayName = ''; // Variable to hold user data
   //-----------------Diary Controller function ----------------
 
   final _diarycontroller = TextEditingController();
   final String? url = dotenv.env['SERVER_URL'];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+  Future<void> _loadUserData() async {
+    // Fetch user data from storage
+    final String? user = await StorageUtil.storage.read(key: 'user');
+    // Check if the fetched data is not null
+    if (user != null) {
+      setState(() {
+        displayName = user; // Update the state with the fetched data
+      });
+    }
+  }
 
   //-----------------Create Diary in DB Function ----------------
 
@@ -133,7 +149,7 @@ class _DiaryPageState extends State<DiaryPage> {
                     ),
                   ),
                   Text(
-                    'PETER ?',
+                    displayName,
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
