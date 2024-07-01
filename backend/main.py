@@ -78,7 +78,7 @@ def login():
             info = auth.get_account_info(user['idToken'])
             # print(info)
             user_doc = db.users.find_one({"_id": user['localId']})
-            print(user_doc)
+            # print(user_doc)
             if user_doc:
                 db.users.update_one({"_id": user['localId']}, {"$set": {"password": info['users'][0]['passwordHash']}})
 

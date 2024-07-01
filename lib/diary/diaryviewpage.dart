@@ -9,7 +9,6 @@ import './diarypage.dart';
 import 'librarypage.dart';
 import './moodsummary.dart';
 import '../article/articlelist.dart';
-import './diaryviewpage.dart';
 import 'package:intl/intl.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:encrypt/encrypt.dart';
