@@ -15,7 +15,6 @@ import 'package:encrypt/encrypt.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import '../model/nlpanalyze.dart';
-import '../model/colormodel.dart';
 
 class DiaryPageDetail extends StatefulWidget {
   final String text;
