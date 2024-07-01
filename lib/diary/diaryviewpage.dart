@@ -52,22 +52,17 @@ class _DiaryPageDetailState extends State<DiaryPageDetail> {
   var _diaryTextController = TextEditingController();
 
   //---------------NLP sentiment Analysis function----------------
-  late String _mood;
   late double _negative;
   late double _neutral;
   late double _positive;
   bool fromEditPage = false;
-  LinearGradient _backgroundGradient =
-      BackgroundColors.getSentimentColor('Neutral');
 
   void _updateSentimentState(
       String sentiment, double positive, double neutral, double negative) {
     setState(() {
-      _mood = sentiment;
       _positive = positive;
       _neutral = neutral;
       _negative = negative;
-      _backgroundGradient = BackgroundColors.getSentimentColor(sentiment);
     });
   }
 
